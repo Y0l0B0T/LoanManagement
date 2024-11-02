@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Admins\Contracts\DTOs\" />
+      <Folder Include="Admins\Exceptions\" />
+      <Folder Include="Customers\Contracts\DTOs\" />
+      <Folder Include="Customers\Exceptions\" />
+      <Folder Include="installments\Contracts\DTOs\" />
+      <Folder Include="installments\Exceptions\" />
+      <Folder Include="LoansDefinition\Contracts\DTOs\" />
+      <Folder Include="LoansDefinition\Exceptions\" />
+      <Folder Include="Loans\Contracts\DTOs\" />
+      <Folder Include="Loans\Exceptions\" />
+    </ItemGroup>
+
+</Project>
