@@ -36,6 +36,8 @@ public class CustomerQueryTests : BusinessIntegrationTest
         actual?.LastName.Should().Be(customer.LastName);
         actual?.PhoneNumber.Should().Be(customer.PhoneNumber);
         actual?.NationalCode.Should().Be(customer.NationalCode);
+        actual?.Email.Should().Be(customer.Email);
+        actual?.Documents.Should().Be(customer.Documents);
     }
 
     [Fact]
@@ -59,9 +61,10 @@ public class CustomerQueryTests : BusinessIntegrationTest
             LastName = customer.LastName,
             NationalCode = customer.NationalCode,
             PhoneNumber = customer.PhoneNumber,
+            Email = customer.Email,
+            Documents = customer.Documents,
             JobType = customer.JobType,
             MonthlyIncome = customer.MonthlyIncome,
-            Email = customer.Email,
             Assets = customer.Assets,
             IsVerified = customer.IsVerified,
         });
@@ -72,9 +75,10 @@ public class CustomerQueryTests : BusinessIntegrationTest
             LastName = customer2.LastName,
             NationalCode = customer2.NationalCode,
             PhoneNumber = customer2.PhoneNumber,
+            Email = customer2.Email,
+            Documents = customer2.Documents,
             JobType = customer2.JobType,
             MonthlyIncome = customer2.MonthlyIncome,
-            Email = customer2.Email,
             Assets = customer2.Assets,
             IsVerified = customer2.IsVerified,
         });
