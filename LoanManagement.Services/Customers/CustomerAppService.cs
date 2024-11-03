@@ -1,4 +1,6 @@
 ﻿using LoanManagement.Entities.Customers;
+using LoanManagement.Services.Admins.Contracts.Interfaces;
+using LoanManagement.Services.Admins.Exceptions;
 using LoanManagement.Services.Customers.Contracts.DTOs;
 using LoanManagement.Services.Customers.Contracts.Interfaces;
 using LoanManagement.Services.Customers.Exceptions;
@@ -7,6 +9,7 @@ using LoanManagement.Services.UnitOfWorks;
 namespace LoanManagement.Services.Customers;
 
 public class CustomerAppService(
+    AdminRepository adminRepository,
     CustomerRepository customerRepository
     , UnitOfWork unitOfWork) : CustomerService
 {
@@ -35,10 +38,15 @@ public class CustomerAppService(
     {
         var customer = customerRepository.Find(customerId)
                        ?? throw new CustomerNotFoundException();
+        
+        if (customer.Documents != null) throw new CustomerHasAlreadyDocumentsException();
+        
         customer.Documents = dto.Documents;
         customerRepository.Update(customer);
         unitOfWork.Save();
     }
+
+
     public void AddFinancialInfo(int customerId,AddFinancialInfoDto dto)
     {
         var customer = customerRepository.Find(customerId)
@@ -52,13 +60,34 @@ public class CustomerAppService(
         customerRepository.Update(customer);
         unitOfWork.Save();
     }
-    public void Confirmed(int customerId)
+    public void ConfirmDocument(int adminId,int customerId)
     {
+        var admin = adminRepository.Find(adminId)
+                    ?? throw new AdminNotFoundException();
+        
         var customer = customerRepository.Find(customerId)
                        ?? throw new CustomerNotFoundException();
+        
+        if (customer.Documents == null) throw new CustomerDocumentsNotFoundException();
+        if (customer.IsVerified == true) throw new CustomerHasAlreadyVerifiedException();
+        
         customer.IsVerified = true;
         customerRepository.Update(customer);
         unitOfWork.Save();
+    }
+    public void RejectDocument(int adminId, int customerId)
+    {
+        var admin = adminRepository.Find(adminId)
+                    ?? throw new AdminNotFoundException();
+        
+        var customer = customerRepository.Find(customerId)
+                       ?? throw new CustomerNotFoundException();
+        
+        customer.Documents = null;
+        customer.IsVerified = false;
+        customerRepository.Update(customer);
+        unitOfWork.Save();
+        
     }
     public void Update(int customerId, UpdateCustomerDto dto)
     {
@@ -82,8 +111,11 @@ public class CustomerAppService(
         unitOfWork.Save();
     }
 
-    public void UpdateByAdmin(int customerId, UpdateByAdminCustomerDto dto)
+    public void UpdateByAdmin(int adminId,int customerId, UpdateByAdminCustomerDto dto)
     {
+        var admin = adminRepository.Find(adminId)
+                    ?? throw new AdminNotFoundException();
+        
         var customer = customerRepository.Find(customerId)
                        ?? throw new CustomerNotFoundException();
         

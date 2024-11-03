@@ -6,8 +6,9 @@ public interface CustomerService
 {
     void Add(AddCustomerDto dto);
     void AddDocuments(int customerId, AddDocumentsDto dto);
-    void Confirmed(int customerId);
+    void ConfirmDocument(int adminId,int customerId);
+    void RejectDocument(int adminId, int customerId);
     void AddFinancialInfo(int customerId,AddFinancialInfoDto dto);
     void Update(int customerId,UpdateCustomerDto dto);
-    void UpdateByAdmin(int customerId, UpdateByAdminCustomerDto dto);
+    void UpdateByAdmin(int adminId,int customerId, UpdateByAdminCustomerDto dto);
 }

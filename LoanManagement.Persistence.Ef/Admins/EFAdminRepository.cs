@@ -10,7 +10,7 @@ public class EFAdminRepository(EfDataContext context) : AdminRepository
        context.Set<Admin>().Add(admin);
     }
 
-    public Admin Find(int id)
+    public Admin? Find(int id)
     {
         return context.Set<Admin>().FirstOrDefault(x => x.Id == id);
     }

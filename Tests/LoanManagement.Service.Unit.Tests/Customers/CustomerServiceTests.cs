@@ -1,11 +1,15 @@
 ﻿using FluentAssertions;
+using LoanManagement.Entities.Admins;
 using LoanManagement.Entities.Customers;
+using LoanManagement.Persistence.Ef.Admins;
 using LoanManagement.Persistence.Ef.Customers;
 using LoanManagement.Persistence.Ef.UnitOfWorks;
+using LoanManagement.Services.Admins.Exceptions;
 using LoanManagement.Services.Customers;
 using LoanManagement.Services.Customers.Contracts.DTOs;
 using LoanManagement.Services.Customers.Contracts.Interfaces;
 using LoanManagement.Services.Customers.Exceptions;
+using LoanManagement.TestTools.Admins;
 using LoanManagement.TestTools.Customers;
 using LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration;
 using Xunit;
@@ -18,9 +22,10 @@ public class CustomerServiceTests : BusinessIntegrationTest
 
     public CustomerServiceTests()
     {
+        var adminRepository = new EFAdminRepository(SetupContext);
         var customerRepository = new EFCustomerRepository(SetupContext);
         var unitOfWork = new EfUnitOfWork(SetupContext);
-        _sut = new CustomerAppService(customerRepository, unitOfWork);
+        _sut = new CustomerAppService(adminRepository,customerRepository, unitOfWork);
     }
 
     [Fact]
@@ -125,6 +130,22 @@ public class CustomerServiceTests : BusinessIntegrationTest
         actual.Should().ThrowExactly<CustomerNotFoundException>();
         ReadContext.Set<Customer>().Should().BeEmpty();
     }
+
+    [Fact]
+    public void AddDocuments_throw_exception_when_customer_already_has_documents()
+    {
+        var customer = new CustomerBuilder().WithDocuments("www.uplod.ir/madrak.jpg").Build();
+        Save(customer);
+
+        var dto = new AddDocumentsDto()
+        {
+            Documents = "www.uplod.ir/madrak1.jpg",
+        };
+        
+        var actual = () => _sut.AddDocuments(customer.Id, dto);
+        actual.Should().ThrowExactly<CustomerHasAlreadyDocumentsException>();
+        ReadContext.Set<Customer>().Single().Documents.Should().NotContain(dto.Documents);
+    }
     
     [Fact]
     public void AddFinancialInfo_add_a_financial_information_to_customer_properly()
@@ -146,6 +167,23 @@ public class CustomerServiceTests : BusinessIntegrationTest
         actual?.MonthlyIncome.Should().Be(dto.MonthlyIncome);
         actual?.JobType.Should().Be(dto.JobType);
         actual?.Assets.Should().Be(dto.Assets);
+    }
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(1)]
+    public void AddFinancialInfo_throw_exception_when_customer_is_not_found(int invalidCustomerId)
+    {
+        var dto = new AddFinancialInfoDto()
+        {
+            JobType = JobType.SelfEmployed,
+            Assets = 10000m,
+            MonthlyIncome = 1000m
+        };
+        
+        var actual =()=> _sut.AddFinancialInfo(invalidCustomerId,dto);
+        
+        actual.Should().ThrowExactly<CustomerNotFoundException>();
+        ReadContext.Set<Customer>().Should().BeEmpty();
     }
     [Fact]
     public void AddFinancialInfo_throw_exception_when_customer_is_not_verified()
@@ -170,50 +208,117 @@ public class CustomerServiceTests : BusinessIntegrationTest
                               c.Assets != dto.Assets &&
                               c.MonthlyIncome != dto.MonthlyIncome);
     }
+    
+    [Fact]
+    public void ConfirmDocument_confirm_a_customer_verification_properly()
+    {
+        var admin = AdminFactory.Create();
+        Save(admin);
+        var customer1 = new CustomerBuilder().WithDocuments("www.uplod.ir/madrak1.jpg").Build();
+        Save(customer1);
+        
+        _sut.ConfirmDocument(admin.Id,customer1.Id);
+        
+        var actual = ReadContext.Set<Customer>().Single();
+        actual.Should().NotBeNull();
+        actual.Documents.Should().BeEquivalentTo(customer1.Documents);
+        actual.IsVerified.Should().BeTrue();
+    }
 
     [Theory]
     [InlineData(-1)]
     [InlineData(1)]
-    public void AddFinancialInfo_throw_exception_when_customer_is_not_found(int invalidCustomerId)
+    public void ConfirmDocument_throw_exception_when_admin_not_found(int invalidAdminId)
     {
-        var dto = new AddFinancialInfoDto()
-        {
-            JobType = JobType.SelfEmployed,
-            Assets = 10000m,
-            MonthlyIncome = 1000m
-        };
+        var customer1 = new CustomerBuilder().WithDocuments("www.uplod.ir/madrak1.jpg").Build();
+        Save(customer1);
         
-        var actual =()=> _sut.AddFinancialInfo(invalidCustomerId,dto);
+        var actual =()=>_sut.ConfirmDocument(invalidAdminId,customer1.Id);
+
+        actual.Should().ThrowExactly<AdminNotFoundException>();
+        ReadContext.Set<Admin>().Should().BeEmpty();
+    }
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(1)]
+    public void ConfirmDocument_throw_exception_when_customer_not_found(int invalidCustomerId)
+    {
+        var admin = AdminFactory.Create();
+        Save(admin);
+        
+        var actual =()=>_sut.ConfirmDocument(admin.Id,invalidCustomerId);
         
         actual.Should().ThrowExactly<CustomerNotFoundException>();
         ReadContext.Set<Customer>().Should().BeEmpty();
     }
-    
-    
+
     [Fact]
-    public void Confirmed_confirm_a_customer_verification_properly()
+    public void ConfirmDocument_throw_exception_when_customer_documents_not_found()
     {
+        var admin = AdminFactory.Create();
+        Save(admin);
         var customer1 = new CustomerBuilder().Build();
         Save(customer1);
         
-        _sut.Confirmed(customer1.Id);
+        var actual =()=> _sut.ConfirmDocument(admin.Id,customer1.Id);
         
-        var actual = ReadContext.Set<Customer>().FirstOrDefault(x => x.Id == customer1.Id);
-        actual.Should().NotBeNull();
-        actual?.IsVerified.Should().BeTrue();
+        actual.Should().ThrowExactly<CustomerDocumentsNotFoundException>();
+        ReadContext.Set<Customer>().Single().Documents.Should().BeNull();
     }
 
+    [Fact]
+    public void ConfirmDocument_throw_exception_when_customer_has_already_verified()
+    {
+        var admin = AdminFactory.Create();
+        Save(admin);
+        var customer1 = new CustomerBuilder().WithDocuments("www.uplod.ir/madrak.jpg").IsVerified(true).Build();
+        Save(customer1);
+        
+        var actual =()=> _sut.ConfirmDocument(admin.Id,customer1.Id);
+
+        actual.Should().ThrowExactly<CustomerHasAlreadyVerifiedException>();
+        ReadContext.Set<Customer>().Single().Documents.Should().BeEquivalentTo(customer1.Documents);
+    }
+    [Fact] 
+    public void RejectDocument_reject_a_customer_verification_properly()
+    {
+        var admin = AdminFactory.Create();
+        Save(admin);
+        var customer1 = new CustomerBuilder().WithDocuments("www.uplod.ir/madrak0.jpg").Build();
+        Save(customer1);
+        
+        _sut.RejectDocument(admin.Id,customer1.Id);
+        
+        var actual = ReadContext.Set<Customer>().Single();
+        actual.Documents.Should().BeNull();
+        actual.IsVerified.Should().BeFalse();
+    }
     [Theory]
     [InlineData(-1)]
     [InlineData(1)]
-    public void Confirmed_throw_exception_when_customer_not_found(int invalidCustomerId)
+    public void RejectDocument_throw_exception_when_admin_not_found(int invalidAdminId)
     {
-        var actual =()=>_sut.Confirmed(invalidCustomerId);
+        var customer1 = new CustomerBuilder().WithDocuments("www.uplod.ir/madrak1.jpg").Build();
+        Save(customer1);
+        
+        var actual =()=>_sut.RejectDocument(invalidAdminId,customer1.Id);
+
+        actual.Should().ThrowExactly<AdminNotFoundException>();
+        ReadContext.Set<Admin>().Should().BeEmpty();
+    }
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(1)]
+    public void RejectDocument_throw_exception_when_customer_not_found(int invalidCustomerId)
+    {
+        var admin = AdminFactory.Create();
+        Save(admin);
+        
+        var actual =()=>_sut.RejectDocument(admin.Id,invalidCustomerId);
         
         actual.Should().ThrowExactly<CustomerNotFoundException>();
         ReadContext.Set<Customer>().Should().BeEmpty();
     }
-    
     [Fact]
     public void Update_update_a_customer_properly()
     {
@@ -329,6 +434,8 @@ public class CustomerServiceTests : BusinessIntegrationTest
     [Fact]
     public void UpdateByAdmin_update_a_customer_properly()
     {
+        var admin = AdminFactory.Create();
+        Save(admin);
         var customer1 = new CustomerBuilder().Build();
         Save(customer1);
         var customer2 = new CustomerBuilder()
@@ -354,7 +461,7 @@ public class CustomerServiceTests : BusinessIntegrationTest
             Assets = 50000000m
         };
         
-        _sut.UpdateByAdmin(customer2.Id,dto);
+        _sut.UpdateByAdmin(admin.Id,customer2.Id,dto);
         
         var actual = ReadContext.Set<Customer>().FirstOrDefault(c => c.Id == customer2.Id);
         actual.Should().BeEquivalentTo(dto);
@@ -364,6 +471,8 @@ public class CustomerServiceTests : BusinessIntegrationTest
     [InlineData("09177328978")]
     public void UpdateByAdmin_update_a_customer_when_phone_number_not_changed_properly(string duplicatePhoneNumber)
     {
+        var admin = AdminFactory.Create();
+        Save(admin);
         var customer = new CustomerBuilder().WithPhoneNumber(duplicatePhoneNumber).Build();
         Save(customer);
         var customer2 = new CustomerBuilder().Build();
@@ -383,7 +492,7 @@ public class CustomerServiceTests : BusinessIntegrationTest
             Assets = 50000000m
         };
         
-        _sut.UpdateByAdmin(customer.Id,dto);
+        _sut.UpdateByAdmin(admin.Id,customer.Id,dto);
         
         ReadContext.Set<Customer>().Should().HaveCount(2)
             .And.ContainSingle(c => c.PhoneNumber == dto.PhoneNumber &&
@@ -398,12 +507,80 @@ public class CustomerServiceTests : BusinessIntegrationTest
                                     c.Assets == dto.Assets &&
                                     c.Id == customer.Id);
     }
+    [Theory]
+    [InlineData("2280971390")]
+    [InlineData("1111111111")]
+    public void UpdateByAdmin_update_a_customer_when_national_code_not_changed_properly(string duplicateNationalCode)
+    {
+        var admin = AdminFactory.Create();
+        Save(admin);
+        var customer = new CustomerBuilder().WithNationalCode(duplicateNationalCode).Build();
+        Save(customer);
+        var customer2 = new CustomerBuilder().Build();
+        Save(customer2);
+        
+        var dto = new UpdateByAdminCustomerDto
+        {
+            FirstName = "Reza",
+            LastName = "Hosseini",
+            PhoneNumber = "09178793451",
+            NationalCode = duplicateNationalCode,
+            Email = "Rezahosseini@gmail.com",
+            Documents = "www.uplod.ir/madrak1.jpg",
+            IsVerified = true,
+            JobType = JobType.Employee,
+            MonthlyIncome = 10000000m,
+            Assets = 50000000m
+        };
+        
+        _sut.UpdateByAdmin(admin.Id,customer.Id,dto);
+        
+        ReadContext.Set<Customer>().Should().HaveCount(2)
+            .And.ContainSingle(c => c.PhoneNumber == dto.PhoneNumber &&
+                                    c.FirstName == dto.FirstName &&
+                                    c.LastName == dto.LastName &&
+                                    c.NationalCode == dto.NationalCode &&
+                                    c.Email == dto.Email &&
+                                    c.Documents == dto.Documents &&
+                                    c.IsVerified == dto.IsVerified &&
+                                    c.JobType == dto.JobType &&
+                                    c.MonthlyIncome == dto.MonthlyIncome &&
+                                    c.Assets == dto.Assets &&
+                                    c.Id == customer.Id);
+    }
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(1)]
+    public void UpdateByAdmin_throw_exception_when_admin_is_not_found(int invalidAdminId)
+    {
+        var customer1 = new CustomerBuilder().Build();
+        Save(customer1);
+        
+        var dto = new UpdateByAdminCustomerDto
+        {
+            FirstName = "Reza",
+            LastName = "Hosseini",
+            PhoneNumber = "09177329867",
+            NationalCode = "2280971390",
+            Email = "Rezahosseini@gmail.com",
+            Documents = "www.uplod.ir/madrak1.jpg",
+            IsVerified = true,
+            JobType = JobType.Employee,
+            MonthlyIncome = 10000000m,
+            Assets = 50000000m
+        };
+        var actual =()=> _sut.UpdateByAdmin(invalidAdminId,customer1.Id,dto);
+        actual.Should().ThrowExactly<AdminNotFoundException>();
+        ReadContext.Set<Admin>().Should().BeEmpty();
+    }
 
     [Theory]
     [InlineData(-1)]
     [InlineData(1)]
     public void UpdateByAdmin_throw_exception_when_customer_is_not_found(int invalidCustomerId)
     {
+        var admin = AdminFactory.Create();
+        Save(admin);
         var dto = new UpdateByAdminCustomerDto
         {
             FirstName = "Reza",
@@ -418,45 +595,17 @@ public class CustomerServiceTests : BusinessIntegrationTest
             Assets = 50000000m
         };
         
-        var actual = () => _sut.UpdateByAdmin(invalidCustomerId,dto);
+        var actual = () => _sut.UpdateByAdmin(admin.Id,invalidCustomerId,dto);
         actual.Should().ThrowExactly<CustomerNotFoundException>();
         ReadContext.Set<Customer>().Should().BeEmpty();
-    }
-    
-    [Theory]
-    [InlineData("09171111111")]
-    [InlineData("09177328978")]
-    public void UpdateByAdmin_throw_exception_when_customer_phone_number_is_duplicate(string duplicatePhoneNumber)
-    {
-        var customer = new CustomerBuilder().WithPhoneNumber(duplicatePhoneNumber).Build();
-        Save(customer);
-        var customer2 = new CustomerBuilder().Build();
-        Save(customer2);
-        
-        var dto = new UpdateByAdminCustomerDto
-        {
-            FirstName = "Reza",
-            LastName = "Hosseini",
-            PhoneNumber = duplicatePhoneNumber,
-            NationalCode = "2280971390",
-            Email = "Rezahosseini@gmail.com",
-            Documents = "www.uplod.ir/madrak1.jpg",
-            IsVerified = true,
-            JobType = JobType.Employee,
-            MonthlyIncome = 10000000m,
-            Assets = 50000000m
-        };
-        
-        var actual =()=> _sut.UpdateByAdmin(customer2.Id,dto);
-        actual.Should().ThrowExactly<PhoneNumberDuplicatedException>();
-        ReadContext.Set<Customer>().Should().HaveCount(2)
-            .And.ContainSingle(c => c.PhoneNumber == duplicatePhoneNumber);
     }
     [Theory]
     [InlineData("2280459159")]
     [InlineData("1111111111")]
     public void UpdateByAdmin_throw_exception_when_customer_national_code_is_duplicate(string duplicateNationalCode)
     {
+        var admin = AdminFactory.Create();
+        Save(admin);
         var customer = new CustomerBuilder().WithNationalCode(duplicateNationalCode).Build();
         Save(customer);
         var customer2 = new CustomerBuilder().Build();
@@ -476,8 +625,38 @@ public class CustomerServiceTests : BusinessIntegrationTest
             Assets = 50000000m
         };
         
-        var actual =()=> _sut.UpdateByAdmin(customer2.Id,dto);
+        var actual =()=> _sut.UpdateByAdmin(admin.Id,customer2.Id,dto);
         actual.Should().ThrowExactly<NationalCodeDuplicatedException>();
     }
-    
+    [Theory]
+    [InlineData("09171111111")]
+    [InlineData("09177328978")]
+    public void UpdateByAdmin_throw_exception_when_customer_phone_number_is_duplicate(string duplicatePhoneNumber)
+    {
+        var admin = AdminFactory.Create();
+        Save(admin);
+        var customer = new CustomerBuilder().WithPhoneNumber(duplicatePhoneNumber).Build();
+        Save(customer);
+        var customer2 = new CustomerBuilder().Build();
+        Save(customer2);
+        
+        var dto = new UpdateByAdminCustomerDto
+        {
+            FirstName = "Reza",
+            LastName = "Hosseini",
+            PhoneNumber = duplicatePhoneNumber,
+            NationalCode = "2280971390",
+            Email = "Rezahosseini@gmail.com",
+            Documents = "www.uplod.ir/madrak1.jpg",
+            IsVerified = true,
+            JobType = JobType.Employee,
+            MonthlyIncome = 10000000m,
+            Assets = 50000000m
+        };
+        
+        var actual =()=> _sut.UpdateByAdmin(admin.Id,customer2.Id,dto);
+        actual.Should().ThrowExactly<PhoneNumberDuplicatedException>();
+        ReadContext.Set<Customer>().Should().HaveCount(2)
+            .And.ContainSingle(c => c.PhoneNumber == duplicatePhoneNumber);
+    }
 }

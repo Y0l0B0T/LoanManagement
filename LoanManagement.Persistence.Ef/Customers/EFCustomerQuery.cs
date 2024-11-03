@@ -21,6 +21,7 @@ public class EFCustomerQuery(EfDataContext context) : CustomerQuery
             NationalCode = _.NationalCode,
             PhoneNumber = _.PhoneNumber,
             Email = _.Email,
+            Documents = _.Documents,
             MonthlyIncome = _.MonthlyIncome,
             JobType = _.JobType,
             Assets = _.Assets,
