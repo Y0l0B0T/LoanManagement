@@ -20,11 +20,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Admins\" />
-      <Folder Include="Customers\" />
       <Folder Include="installments\" />
       <Folder Include="LoansDefinition\" />
       <Folder Include="Loans\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LoanManagement.TestTools\LoanManagement.TestTools.csproj" />
     </ItemGroup>
 
 </Project>

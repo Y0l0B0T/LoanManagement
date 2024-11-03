@@ -2,7 +2,7 @@
 
 namespace LoanManagement.Persistence.Ef.installments;
 
-public class EFInstallmentQuery : InstallmentQuery
+public class EFInstallmentQuery(EfDataContext context) : InstallmentQuery
 {
     
 }

@@ -48,9 +48,14 @@ public class CustomerBuilder
         return this;
     }
 
-    public CustomerBuilder IsVerified()
+    public CustomerBuilder WithDocuments(string documents)
     {
-        _customer.IsVerified = false;
+        _customer.Documents = documents;
+        return this;
+    }
+    public CustomerBuilder IsVerified(bool isVerified)
+    {
+        _customer.IsVerified = isVerified;
         return this;
     }
 

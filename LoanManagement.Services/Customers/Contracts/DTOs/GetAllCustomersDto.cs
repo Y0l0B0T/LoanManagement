@@ -1,8 +1,8 @@
-﻿using LoanManagement.Entities.Loans;
+﻿using LoanManagement.Entities.Customers;
 
-namespace LoanManagement.Entities.Customers;
+namespace LoanManagement.Services.Customers.Contracts.DTOs;
 
-public class Customer
+public class GetAllCustomersDto
 {
     public int Id { get; set; }
     public required string FirstName { get; set; }
@@ -11,16 +11,8 @@ public class Customer
     public required string NationalCode { get; set; }
     public string? Email { get; set; }
     public string? Documents { get; set; }
-    public bool IsVerified { get; set; } = false;
+    public bool IsVerified { get; set; }
     public decimal? MonthlyIncome { get; set; }
     public JobType? JobType { get; set; }
     public decimal? Assets { get; set; }
-    public HashSet<Loan> Loans { get; set; } = [];
-}
-
-public enum JobType
-{
-    Employee = 1,
-    SelfEmployed,
-    UnEmployed
 }

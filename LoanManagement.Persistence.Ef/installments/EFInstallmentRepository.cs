@@ -2,7 +2,7 @@
 
 namespace LoanManagement.Persistence.Ef.installments;
 
-public class EFInstallmentRepository : InstallmentRepository
+public class EFInstallmentRepository(EfDataContext context) : InstallmentRepository
 {
     
 }

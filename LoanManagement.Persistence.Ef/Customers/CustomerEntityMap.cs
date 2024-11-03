@@ -16,6 +16,7 @@ public class CustomerEntityMap : IEntityTypeConfiguration<Customer>
         builder.Property(x => x.PhoneNumber).HasMaxLength(11).IsRequired();
         builder.Property(x => x.NationalCode).HasMaxLength(10).IsRequired();
         builder.Property(x => x.Email).IsRequired(false);
+        builder.Property(x=>x.Documents).IsRequired(false);
         builder.Property(x => x.IsVerified).IsRequired();
         builder.Property(x => x.MonthlyIncome).HasColumnType("decimal(18,2)").IsRequired(false);
         builder.Property(x => x.JobType).IsRequired(false);

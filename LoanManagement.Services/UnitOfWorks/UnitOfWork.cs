@@ -2,6 +2,7 @@
 
 public interface UnitOfWork
 {
+    Task SaveAsync();
     void Save();
     Task Begin();
     Task Rollback();

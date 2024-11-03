@@ -13,6 +13,7 @@ public class _202411021815_AddCustomersTable : FluentMigrator.Migration
             .WithColumn("PhoneNumber").AsString(11).NotNullable()
             .WithColumn("NationalCode").AsString(10).NotNullable()
             .WithColumn("Email").AsString().Nullable()
+            .WithColumn("Documents").AsString().Nullable()
             .WithColumn("IsVerified").AsBoolean().NotNullable()
             .WithColumn("MonthlyIncome").AsDecimal(18,2).Nullable()
             .WithColumn("JobType").AsInt32().Nullable()

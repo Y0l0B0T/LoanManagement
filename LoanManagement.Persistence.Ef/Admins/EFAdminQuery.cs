@@ -1,8 +1,23 @@
-﻿using LoanManagement.Services.Admins.Contracts.Interfaces;
+﻿using System.Security.Cryptography;
+using LoanManagement.Entities.Admins;
+using LoanManagement.Service.Unit.Tests.Admins;
+using LoanManagement.Services.Admins.Contracts.Interfaces;
 
 namespace LoanManagement.Persistence.Ef.Admins;
 
-public class EFAdminQuery : AdminQuery
+public class EFAdminQuery(EfDataContext context) : AdminQuery
 {
-    
+    public HashSet<GetAllAdminsDto> GetAll()
+    {
+        return context.Set<Admin>().Select(_ => new GetAllAdminsDto
+        {
+            Id = _.Id,
+            Name = _.Name,
+        }).ToHashSet();
+    }
+
+    public Admin? GetById(int adminId)
+    {
+        return context.Set<Admin>().FirstOrDefault(x => x.Id == adminId);
+    }
 }

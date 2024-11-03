@@ -2,7 +2,7 @@
 
 namespace LoanManagement.Persistence.Ef.LoansDefinition;
 
-public class EFLoanDefinitionRepository : LoanDefinitionRepository
+public class EFLoanDefinitionRepository(EfDataContext context) : LoanDefinitionRepository
 {
     
 }
