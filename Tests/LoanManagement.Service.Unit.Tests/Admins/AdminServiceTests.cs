@@ -23,7 +23,10 @@ public class AdminServiceTests : BusinessIntegrationTest
     [Fact]
     public void Add_add_an_admin_properly()
     {
-        var dto = new AddAdminDtoBuilder().WithName("Admin").Build();
+        var dto = new AddAdminDto()
+        {
+            Name = "Admin",
+        };
 
         _sut.Add(dto);
 

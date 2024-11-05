@@ -132,8 +132,8 @@ public class LoanAppService(
         loanRepository.Update(loan);
         unitOfWork.Save();
     }
-
-
+    
+    //-----------------------------------------Private Method For Calculating Properties
     private int CalculateValidationScore(Loan loan, Customer customer, LoanDefinition loanDefinition)
     {
         var score = 0;

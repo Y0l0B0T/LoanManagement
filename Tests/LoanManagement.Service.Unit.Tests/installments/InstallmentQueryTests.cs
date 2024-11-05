@@ -3,12 +3,8 @@ using LoanManagement.Entities.Customers;
 using LoanManagement.Entities.installments;
 using LoanManagement.Entities.Loans;
 using LoanManagement.Persistence.Ef.installments;
-using LoanManagement.Persistence.Ef.Loans;
-using LoanManagement.Persistence.Ef.UnitOfWorks;
-using LoanManagement.Services.installments;
 using LoanManagement.Services.installments.Contracts.DTOs;
 using LoanManagement.Services.installments.Contracts.Interfaces;
-using LoanManagement.Services.installments.Exceptions;
 using LoanManagement.TestTools.Customers;
 using LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration;
 using LoanManagement.TestTools.installments;
@@ -18,17 +14,54 @@ using Xunit;
 
 namespace LoanManagement.Service.Unit.Tests.installments;
 
-public class InstallmentServiceTests : BusinessIntegrationTest
+public class InstallmentQueryTests : BusinessIntegrationTest
 {
-    private readonly InstallmentService _sut;
+    private InstallmentQuery _sut;
 
-    public InstallmentServiceTests()
+    public InstallmentQueryTests()
     {
-        _sut = InstallmentServiceFactory.Generate(SetupContext);
+        _sut = new EFInstallmentQuery(ReadContext);
     }
 
     [Fact]
-    public void PayInstallment_pay_installment_properly()
+    public void GetById_get_a_installment_properly()
+    {
+        var customer = new CustomerBuilder()
+            .WithJobType(JobType.Employee)
+            .WithAssets(20000000)
+            .WithMonthlyIncome(7000000)
+            .WithDocuments("madarek")
+            .IsVerified(true)
+            .Build();
+        Save(customer);
+        var loanDefinition = new LoanDefinitionBuilder()
+            .WithInstallmentsCount(6)
+            .WithLoanAmount(10000000).Build();
+        Save(loanDefinition);
+        var loan = new LoanBuilder()
+            .WithCustomerId(customer.Id)
+            .WithLoanDefinitionId(loanDefinition.Id)
+            .WithStatus(LoanStatus.Paying)
+            .WithValidationScore(65)
+            .WithLoanType("ShortTerm")
+            .Build();
+        Save(loan);
+        var installment = new InstallmentBuilder()
+            .WithLoanId(loan.Id)
+            .WithStatus(InstallmentStatus.Pending)
+            .WithDueTime(new DateOnly(2020,01,01))
+            .Build();
+        Save(installment);
+        
+        var actual = _sut.GetById(installment.Id);
+        
+        actual?.Status.Should().Be(installment.Status);
+        actual?.DueTime.Should().Be(installment.DueTime);
+        actual?.LoanId.Should().Be(installment.LoanId);
+    }
+
+    [Fact]
+    public void GetAll_get_all_installments_properly()
     {
         var customer = new CustomerBuilder()
             .WithJobType(JobType.Employee)
@@ -62,57 +95,29 @@ public class InstallmentServiceTests : BusinessIntegrationTest
             .WithDueTime(new DateOnly(2020,02,01))
             .Build();
         Save(installment2);
-        var dto = new PayInstallmentDto()
+        
+        var actual = _sut.GetAll();
+        
+        actual.Should().ContainEquivalentOf(new GetAllInstallmentsDto
         {
-            PaymentTime = new DateOnly(2020,01,01)
-        };
-        
-        _sut.PayInstallment(installment.Id, dto);
-        
-        var actual = ReadContext.Set<Installment>().Single(c => c.Id == installment.Id);
-        actual.PaymentTime.Should().Be(dto.PaymentTime);
-        actual.Status.Should().NotBe(InstallmentStatus.Pending);
-    }
-
-    [Theory]
-    [InlineData(-1)]
-    [InlineData(1)]
-    public void PayInstallment_throw_exception_when_installment_not_found(int invalidInstallmentId)
-    {
-        var customer = new CustomerBuilder()
-            .WithJobType(JobType.Employee)
-            .WithAssets(20000000)
-            .WithMonthlyIncome(7000000)
-            .WithDocuments("madarek")
-            .IsVerified(true)
-            .Build();
-        Save(customer);
-        var loanDefinition = new LoanDefinitionBuilder()
-            .WithInstallmentsCount(6)
-            .WithLoanAmount(10000000).Build();
-        Save(loanDefinition);
-        var loan = new LoanBuilder()
-            .WithCustomerId(customer.Id)
-            .WithLoanDefinitionId(loanDefinition.Id)
-            .WithStatus(LoanStatus.Paying)
-            .WithValidationScore(65)
-            .WithLoanType("ShortTerm")
-            .Build();
-        Save(loan);
-        
-        
-        var dto = new PayInstallmentDto()
+            Id = installment.Id,
+            DueTime = installment.DueTime,
+            PaymentTime = installment.PaymentTime,
+            Status = installment.Status,
+            LoanId = installment.LoanId,
+        });
+        actual.Should().ContainEquivalentOf(new GetAllInstallmentsDto
         {
-            PaymentTime = new DateOnly(2020,01,01)
-        };
-        
-        var actual =()=> _sut.PayInstallment(invalidInstallmentId, dto);
-        actual.Should().Throw<InstallmentNotFoundException>();
-        ReadContext.Set<Installment>().Should().BeEmpty();
+            Id = installment2.Id,
+            DueTime = installment2.DueTime,
+            PaymentTime = installment2.PaymentTime,
+            Status = installment2.Status,
+            LoanId = installment2.LoanId,
+        });
     }
 
     [Fact]
-    public void PayInstallment_throw_exception_when_installment_already_paid()
+    public void GetAllInstallmentsOfLoan_get_all_installments_of_loan_properly()
     {
         var customer = new CustomerBuilder()
             .WithJobType(JobType.Employee)
@@ -136,28 +141,32 @@ public class InstallmentServiceTests : BusinessIntegrationTest
         Save(loan);
         var installment = new InstallmentBuilder()
             .WithLoanId(loan.Id)
-            .WithStatus(InstallmentStatus.PaidOnTime)
+            .WithStatus(InstallmentStatus.Pending)
             .WithDueTime(new DateOnly(2020,01,01))
-            .WithPaymentTime(new DateOnly(2020,01,01))
             .Build();
         Save(installment);
         var installment2 = new InstallmentBuilder()
             .WithLoanId(loan.Id)
-            .WithStatus(InstallmentStatus.PaidOnTime)
+            .WithStatus(InstallmentStatus.Pending)
             .WithDueTime(new DateOnly(2020,02,01))
-            .WithPaymentTime(new DateOnly(2020,02,01))
             .Build();
         Save(installment2);
-        var dto = new PayInstallmentDto()
-        {
-            PaymentTime = new DateOnly(2020,02,02)
-        };
         
-        var actual =()=> _sut.PayInstallment(installment.Id, dto);
-
-        actual.Should().ThrowExactly<InstallmentAlreadyPaidException>();
-        var result = ReadContext.Set<Installment>().Single(c => c.Id == installment.Id);
-        result.PaymentTime.Should().Be(installment.PaymentTime);
-        result.Status.Should().Be(InstallmentStatus.PaidOnTime);
+        var actual = _sut.GetAllInstallmentsOfLoan(loan.Id);
+        
+        actual.Should().ContainEquivalentOf(new GetallInstallmentsOfLoanDto
+        {
+            Id = installment.Id,
+            Status = installment.Status,
+            DueTime = installment.DueTime,
+            PaymentTime = installment.PaymentTime,
+        });
+        actual.Should().ContainEquivalentOf(new GetallInstallmentsOfLoanDto
+        {
+            Id = installment2.Id,
+            Status = installment2.Status,
+            DueTime = installment2.DueTime,
+            PaymentTime = installment2.PaymentTime,
+        });
     }
 }

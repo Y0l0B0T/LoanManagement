@@ -21,7 +21,7 @@ public class LoanDefinitionAppService(
         loanDefinitionRepository.Add(loanDefinition);
         unitOfWork.Save();
     }
-    //-----------------------------------------Private Method For Calculating Properties :)
+    //-----------------------------------------Private Method For Calculating Properties
     private LoanDefinition CalculateLoanDetails(decimal loanAmount, int installmentsCount)
     {
         var loan = new LoanDefinition
