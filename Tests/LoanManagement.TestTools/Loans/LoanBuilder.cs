@@ -1,4 +1,5 @@
-﻿using LoanManagement.Entities.Loans;
+﻿using LoanManagement.Entities.installments;
+using LoanManagement.Entities.Loans;
 
 namespace LoanManagement.TestTools.Loans;
 
@@ -8,14 +9,10 @@ public class LoanBuilder
 
     public LoanBuilder()
     {
-        _loan = new Loan()
+        _loan = new Loan
         {
-            CustomerId = 1,
-            LoanDefinitionId = 1,
-            CreationDate = new DateOnly(2022,01,01),
-            ValidationScore = 0,
-            Status = LoanStatus.UnderReview,
-            LoanType = "Short-Term"
+            CreationDate = DateOnly.FromDateTime(DateTime.Now),
+            Status = LoanStatus.UnderReview
         };
     }
 
@@ -31,21 +28,27 @@ public class LoanBuilder
         return this;
     }
 
-    public LoanBuilder WithValidationScore(int validationScore)
+    public LoanBuilder WithLoanType(string loanType)
     {
-        _loan.ValidationScore = validationScore;
+        _loan.LoanType = loanType;
+        return this;
+    }
+
+    public LoanBuilder WithInstallments()
+    {
+        _loan.Installments = new HashSet<Installment>();
+        return this;
+    }
+
+    public LoanBuilder WithValidationScore(int score)
+    {
+        _loan.ValidationScore = score;
         return this;
     }
 
     public LoanBuilder WithStatus(LoanStatus status)
     {
         _loan.Status = status;
-        return this;
-    }
-
-    public LoanBuilder WithLoanType(string loanType)
-    {
-        _loan.LoanType = loanType;
         return this;
     }
 

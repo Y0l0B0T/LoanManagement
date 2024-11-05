@@ -21,8 +21,6 @@
 
     <ItemGroup>
       <Folder Include="installments\" />
-      <Folder Include="LoansDefinition\" />
-      <Folder Include="Loans\" />
     </ItemGroup>
 
     <ItemGroup>

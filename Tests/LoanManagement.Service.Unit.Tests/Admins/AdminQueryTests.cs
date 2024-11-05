@@ -18,7 +18,7 @@ public class AdminQueryTests : BusinessIntegrationTest
     }
 
     [Fact]
-    public void GetAll_get_all_floors_properly()
+    public void GetAll_get_all_admins_properly()
     {
         var admin1 = new AdminBuilder().WithName("Admin1").Build();
         Save(admin1);

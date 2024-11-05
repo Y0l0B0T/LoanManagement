@@ -13,15 +13,14 @@ public class LoanEntityMap : IEntityTypeConfiguration<Loan>
         builder.Property(x => x.Id).UseIdentityColumn();
         builder.Property(x => x.CreationDate).IsRequired();
         builder.Property(x => x.ValidationScore).IsRequired();
-        builder.Property(x => x.Status).HasColumnType("int").IsRequired();
+        builder.Property(x => x.Status).IsRequired();
         builder.Property(x => x.LoanType).IsRequired();
         
-        builder.HasOne(x => x.Customer).WithMany()
-            .HasForeignKey(x => x.CustomerId).IsRequired(false);
+        builder.HasOne(x => x.Customer).WithMany(x=>x.MyLoans)
+            .HasForeignKey(x => x.CustomerId).IsRequired();
         
-        builder.HasOne(x => x.LoanDefinition).WithMany()
+        builder.HasOne(x => x.LoanDefinition).WithMany(x=>x.AllLoans)
             .HasForeignKey(x => x.LoanDefinitionId).IsRequired();
         
-        builder.Property(x => x.Status).HasConversion<int>();
     }
 }

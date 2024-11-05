@@ -1,11 +1,7 @@
 ﻿using FluentAssertions;
 using LoanManagement.Entities.Admins;
 using LoanManagement.Entities.Customers;
-using LoanManagement.Persistence.Ef.Admins;
-using LoanManagement.Persistence.Ef.Customers;
-using LoanManagement.Persistence.Ef.UnitOfWorks;
 using LoanManagement.Services.Admins.Exceptions;
-using LoanManagement.Services.Customers;
 using LoanManagement.Services.Customers.Contracts.DTOs;
 using LoanManagement.Services.Customers.Contracts.Interfaces;
 using LoanManagement.Services.Customers.Exceptions;
@@ -22,10 +18,7 @@ public class CustomerServiceTests : BusinessIntegrationTest
 
     public CustomerServiceTests()
     {
-        var adminRepository = new EFAdminRepository(SetupContext);
-        var customerRepository = new EFCustomerRepository(SetupContext);
-        var unitOfWork = new EfUnitOfWork(SetupContext);
-        _sut = new CustomerAppService(adminRepository,customerRepository, unitOfWork);
+        _sut = CustomerServiceFactory.Generate(SetupContext);
     }
 
     [Fact]
@@ -236,7 +229,8 @@ public class CustomerServiceTests : BusinessIntegrationTest
         var actual =()=>_sut.ConfirmDocument(invalidAdminId,customer1.Id);
 
         actual.Should().ThrowExactly<AdminNotFoundException>();
-        ReadContext.Set<Admin>().Should().BeEmpty();
+        var result = ReadContext.Set<Customer>().Single();
+        result.IsVerified.Should().BeFalse();
     }
     [Theory]
     [InlineData(-1)]
@@ -249,7 +243,8 @@ public class CustomerServiceTests : BusinessIntegrationTest
         var actual =()=>_sut.ConfirmDocument(admin.Id,invalidCustomerId);
         
         actual.Should().ThrowExactly<CustomerNotFoundException>();
-        ReadContext.Set<Customer>().Should().BeEmpty();
+        var result = ReadContext.Set<Customer>().Single();
+        result.IsVerified.Should().BeFalse();
     }
 
     [Fact]
@@ -263,7 +258,8 @@ public class CustomerServiceTests : BusinessIntegrationTest
         var actual =()=> _sut.ConfirmDocument(admin.Id,customer1.Id);
         
         actual.Should().ThrowExactly<CustomerDocumentsNotFoundException>();
-        ReadContext.Set<Customer>().Single().Documents.Should().BeNull();
+        var result = ReadContext.Set<Customer>().Single();
+        result.IsVerified.Should().BeFalse();
     }
 
     [Fact]
@@ -277,7 +273,9 @@ public class CustomerServiceTests : BusinessIntegrationTest
         var actual =()=> _sut.ConfirmDocument(admin.Id,customer1.Id);
 
         actual.Should().ThrowExactly<CustomerHasAlreadyVerifiedException>();
-        ReadContext.Set<Customer>().Single().Documents.Should().BeEquivalentTo(customer1.Documents);
+        var result = ReadContext.Set<Customer>().Single();
+        result.IsVerified.Should().BeTrue();
+        result.Documents.Should().BeEquivalentTo(customer1.Documents);
     }
     [Fact] 
     public void RejectDocument_reject_a_customer_verification_properly()
@@ -304,7 +302,8 @@ public class CustomerServiceTests : BusinessIntegrationTest
         var actual =()=>_sut.RejectDocument(invalidAdminId,customer1.Id);
 
         actual.Should().ThrowExactly<AdminNotFoundException>();
-        ReadContext.Set<Admin>().Should().BeEmpty();
+        var result = ReadContext.Set<Customer>().Single();
+        result.IsVerified.Should().BeFalse();
     }
     [Theory]
     [InlineData(-1)]

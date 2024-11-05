@@ -10,7 +10,8 @@ public class _202411021827_AddInstallmentsTable : FluentMigrator.Migration
             .WithColumn("Id").AsInt32().PrimaryKey().Identity()
             .WithColumn("DueTime").AsDate().NotNullable()
             .WithColumn("PaymentTime").AsDate().Nullable()
-            .WithColumn("LoanId").AsInt32().Nullable()
+            .WithColumn("Status").AsInt32().NotNullable()
+            .WithColumn("LoanId").AsInt32().NotNullable()
             .ForeignKey("FK_Installments_Loans", "Loans", "Id");
     }
 

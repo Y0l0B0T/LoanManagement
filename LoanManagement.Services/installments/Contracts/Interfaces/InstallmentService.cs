@@ -2,5 +2,5 @@
 
 public interface InstallmentService
 {
-    
+    // void PayInstallment(int installmentId, DateOnly paymentDate);
 }

@@ -8,6 +8,13 @@ public class Installment
     public int LoanId { get; set; }
     public DateOnly DueTime { get; set; }
     public DateOnly? PaymentTime { get; set; }
-        
+    public InstallmentStatus Status { get; set; }
     public Loan Loan { get; set; }
+}
+
+public enum InstallmentStatus
+{
+    Pending = 1,
+    PaidOnTime,
+    PaidWithDelay
 }

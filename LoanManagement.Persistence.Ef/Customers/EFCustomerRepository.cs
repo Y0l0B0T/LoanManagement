@@ -9,7 +9,6 @@ public class EFCustomerRepository(EfDataContext context) : CustomerRepository
     {
         context.Set<Customer>().Add(customer);
     }
-
     public bool IsDuplicateNationalCode(string nationalCode)
     {
         return context.Set<Customer>().Any(_ => _.NationalCode == nationalCode);

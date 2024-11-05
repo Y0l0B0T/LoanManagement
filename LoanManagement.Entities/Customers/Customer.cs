@@ -15,7 +15,7 @@ public class Customer
     public decimal? MonthlyIncome { get; set; }
     public JobType? JobType { get; set; }
     public decimal? Assets { get; set; }
-    public HashSet<Loan> Loans { get; set; } = [];
+    public HashSet<Loan> MyLoans { get; set; } = [];
 }
 
 public enum JobType

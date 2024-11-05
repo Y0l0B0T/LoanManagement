@@ -13,6 +13,7 @@ public class InstallmentEntityMap : IEntityTypeConfiguration<Installment>
         builder.Property(x => x.Id).UseIdentityColumn();
         builder.Property(x => x.DueTime).IsRequired();
         builder.Property(x => x.PaymentTime).IsRequired(false);
+        builder.Property(x => x.Status).IsRequired();
         builder.HasOne(x => x.Loan)
             .WithMany(x => x.Installments).HasForeignKey(x => x.LoanId).IsRequired();
     }

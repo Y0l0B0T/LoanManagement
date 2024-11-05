@@ -77,12 +77,6 @@ public class CustomerBuilder
         return this;
     }
 
-    public CustomerBuilder WithLoan(Loan loan)
-    {
-        _customer.Loans.Add(loan);
-        return this;
-    }
-
     public Customer Build()
     {
         return _customer;
