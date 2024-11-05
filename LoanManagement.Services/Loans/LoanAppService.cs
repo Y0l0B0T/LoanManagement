@@ -2,6 +2,7 @@
 using LoanManagement.Entities.installments;
 using LoanManagement.Entities.Loans;
 using LoanManagement.Entities.LoansDefinition;
+using LoanManagement.Service.Unit.Tests;
 using LoanManagement.Services.Admins.Contracts.Interfaces;
 using LoanManagement.Services.Admins.Exceptions;
 using LoanManagement.Services.Customers.Contracts.Interfaces;
@@ -25,15 +26,15 @@ public class LoanAppService(
     {
         var customer = customerRepository.Find(dto.CustomerId)
                        ?? throw new CustomerNotFoundException();
-        
+
         if (customer.IsVerified == false) throw new CustomerIsNotVerifiedException();
-        
+
         var loanDefinition = loanDefinitionRepository.Find(dto.LoanDefinitionId)
                              ?? throw new LoanDefinitionNotFoundException();
-        
-        if (loanRepository.IsDuplicate(customer.Id, loanDefinition.Id)) 
+
+        if (loanRepository.IsDuplicate(customer.Id, loanDefinition.Id))
             throw new LoanDuplicatedException();
-        
+
         var loan = new Loan
         {
             CustomerId = dto.CustomerId,
@@ -41,10 +42,10 @@ public class LoanAppService(
             CreationDate = DateOnly.FromDateTime(DateTime.Now),
             LoanType = loanDefinition.Name
         };
-        loan.ValidationScore = CalculateValidationScore(loan,customer, loanDefinition);
-        loan.Status = 
+        loan.ValidationScore = CalculateValidationScore(loan, customer, loanDefinition);
+        loan.Status =
             loan.ValidationScore >= 60 ? LoanStatus.UnderReview : LoanStatus.Rejected;
-        
+
         loanRepository.Add(loan);
         unitOfWork.Save();
     }
@@ -55,9 +56,9 @@ public class LoanAppService(
                     ?? throw new AdminNotFoundException();
         var loan = loanRepository.Find(loanId)
                    ?? throw new LoanNotFoundException();
-        if (loan.Status != LoanStatus.UnderReview) 
+        if (loan.Status != LoanStatus.UnderReview)
             throw new InvalidLoanStatusForConfirmationException();
-            
+
         loan.Status = LoanStatus.Approved;
         loanRepository.Update(loan);
         unitOfWork.Save();
@@ -69,112 +70,80 @@ public class LoanAppService(
                     ?? throw new AdminNotFoundException();
         var loan = loanRepository.Find(loanId)
                    ?? throw new LoanNotFoundException();
-        if (loan.Status != LoanStatus.UnderReview) 
+        if (loan.Status != LoanStatus.UnderReview)
             throw new InvalidLoanStatusForRejectionException();
-            
+
         loan.Status = LoanStatus.Rejected;
         loanRepository.Update(loan);
         unitOfWork.Save();
     }
-    
+
     public void PayLoan(int adminId, int loanId)
     {
-        
-        //Bayad bad az Pay Qest ha nis Ezafe shavand
         var admin = adminRepository.Find(adminId)
                     ?? throw new AdminNotFoundException();
         var loan = loanRepository.Find(loanId)
                    ?? throw new LoanNotFoundException();
-        if (loan.Status != LoanStatus.Approved) 
+        if (loan.Status != LoanStatus.Approved)
             throw new InvalidLoanStatusForPayingException();
-        
-        // for (int i = 1; i <= loan.LoanDefinition.InstallmentsCount; i++)
-        // {
-        //     loan.Installments.Add(new Installment
-        //     {
-        //         DueTime = DateOnly.FromDateTime(DateTime.Now.AddMonths(i)),
-        //     });
-        // }
-            
+
+        var startDate = DateOnly.FromDateTime(DateTime.Now.Date).AddMonths(1);
+
+        for (var i = 0; i < loan.LoanDefinition.InstallmentsCount; i++)
+        {
+            loan.Installments.Add(new Installment
+            {
+                DueTime = startDate.AddMonths(i),
+                Status = InstallmentStatus.Pending,
+            });
+        }
         loan.Status = LoanStatus.Paying;
+        loanRepository.AddInstallmens(loan);
         loanRepository.Update(loan);
         unitOfWork.Save();
     }
-    
-    public void DelayInPayLoan(int adminId, int loanId)
+
+    public void DelayInPayLoan(int loanId)
     {
-        //bayad baressi konad ke hadeaghal 1 qest aqab oftade
-        var admin = adminRepository.Find(adminId)
-                    ?? throw new AdminNotFoundException();
-        var loan = loanRepository.Find(loanId)
+        var loan = loanRepository.FindInstallments(loanId)
                    ?? throw new LoanNotFoundException();
-        if (loan.Status != LoanStatus.Paying) 
+
+        if (loan.Status != LoanStatus.Paying)
             throw new InvalidLoanStatusForDelayInPayException();
-            
+
+        if (loan.Installments.All(i => i.Status != InstallmentStatus.PaidWithDelay)) return;
+        
         loan.Status = LoanStatus.DelayInPaying;
         loanRepository.Update(loan);
         unitOfWork.Save();
     }
-    
-    public void ClosedLoan(int adminId, int loanId)
+
+    public void ClosedLoan(int loanId)
     {
-        var admin = adminRepository.Find(adminId)
-                    ?? throw new AdminNotFoundException();
-        var loan = loanRepository.Find(loanId)
+        var loan = loanRepository.FindInstallments(loanId)
                    ?? throw new LoanNotFoundException();
-        if (loan.Status != LoanStatus.Paying) 
+        if (loan.Status != LoanStatus.Paying)
             throw new InvalidLoanStatusForDelayInPayException();
-        if (loan.Installments != null && loan.Installments.Count != 0)
-            throw new LoanHasInstallmentsException();
         
+        if (loan.Installments.Any(i => i.Status == InstallmentStatus.Pending))
+            throw new LoanHasPendingInstallmentException();
+
         loan.Status = LoanStatus.Closed;
         loanRepository.Update(loan);
         unitOfWork.Save();
     }
 
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    private int CalculateValidationScore(Loan loan,Customer customer, LoanDefinition loanDefinition)
+    private int CalculateValidationScore(Loan loan, Customer customer, LoanDefinition loanDefinition)
     {
         var score = 0;
-        
+
         score += CalculatePreviousLoansScore(loan.CustomerId);
-        
+
         score += CalculateIncomeScore(customer.MonthlyIncome);
-        
+
         score += CalculateJobTypeScore(customer.JobType);
-        
+
         score += CalculateAssetsScore(loanDefinition.LoanAmount, customer.Assets);
 
         return score;
@@ -182,30 +151,23 @@ public class LoanAppService(
 
     private int CalculatePreviousLoansScore(int customerId)
     {
-        var previousLoans = loanRepository.GetCustomerLoansById(customerId);
-        var score = 0;
+        var previousLoans = loanRepository
+            .GetCustomerLoansById(customerId)
+            .Where(l => l.Status == LoanStatus.Closed);
 
-        foreach (var prevLoan in previousLoans.Where(l => l.Status == LoanStatus.Closed))
-        {
-            if (prevLoan.Installments.All(i => i.Status == InstallmentStatus.PaidOnTime))
-            {
-                score += 30;
-            }
-            else
-            {
-                var delayedCount = prevLoan.Installments.Count(i => i.Status == InstallmentStatus.PaidWithDelay);
-                score -= (delayedCount * 5);
-            }
-        }
-        return score;
+        return previousLoans.Sum(prevLoan =>
+            prevLoan.Installments.All(i => i.Status == InstallmentStatus.PaidOnTime)
+                ? 30
+                : -5 * prevLoan.Installments.Count(i => i.Status == InstallmentStatus.PaidWithDelay));
     }
 
     private int CalculateIncomeScore(decimal? monthlyIncome)
     {
         if (monthlyIncome > 10000000) return 20;
         if (monthlyIncome >= 5000000 && monthlyIncome <= 10000000) return 10;
-        return 0; 
+        return 0;
     }
+
     private int CalculateJobTypeScore(JobType? jobType)
     {
         return jobType switch

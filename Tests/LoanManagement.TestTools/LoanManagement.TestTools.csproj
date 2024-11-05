@@ -21,9 +21,5 @@
       <ProjectReference Include="..\..\LoanManagement.Persistence.Ef\LoanManagement.Persistence.Ef.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="installments\" />
-    </ItemGroup>
-
 
 </Project>

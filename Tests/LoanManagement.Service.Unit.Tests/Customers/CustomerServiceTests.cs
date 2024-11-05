@@ -243,8 +243,7 @@ public class CustomerServiceTests : BusinessIntegrationTest
         var actual =()=>_sut.ConfirmDocument(admin.Id,invalidCustomerId);
         
         actual.Should().ThrowExactly<CustomerNotFoundException>();
-        var result = ReadContext.Set<Customer>().Single();
-        result.IsVerified.Should().BeFalse();
+        ReadContext.Set<Customer>().Should().BeEmpty();
     }
 
     [Fact]

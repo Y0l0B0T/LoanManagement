@@ -13,4 +13,5 @@ public interface LoanQuery
     HashSet<GetAllLoansDto> GetAllInPaying();
     HashSet<GetAllLoansDto> GetAllActiveLoans();
     HashSet<GetAllLoansDto> GetAllInClosed();
+    HashSet<GetPendingInstallmentsByLoanId> GetPendingInstallmentsByLoanId(int loadId);
 }

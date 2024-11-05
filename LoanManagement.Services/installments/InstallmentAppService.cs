@@ -1,30 +1,29 @@
-﻿using LoanManagement.Services.installments.Contracts.Interfaces;
+﻿using LoanManagement.Entities.installments;
+using LoanManagement.Services.installments.Contracts.DTOs;
+using LoanManagement.Services.installments.Contracts.Interfaces;
+using LoanManagement.Services.installments.Exceptions;
+using LoanManagement.Services.Loans.Contracts.Interfaces;
+using LoanManagement.Services.UnitOfWorks;
 
 namespace LoanManagement.Services.installments;
 
-public class InstallmentAppService : InstallmentService
+public class InstallmentAppService(
+    LoanRepository loanRepository,
+    InstallmentRepository installmentRepository,
+    UnitOfWork unitOfWork) : InstallmentService
 {
-    // public class InstallmentService
-    // {
-    //     private readonly ILoanRepository _loanRepository;
-    //
-    //     public InstallmentService(ILoanRepository loanRepository)
-    //     {
-    //         _loanRepository = loanRepository;
-    //     }
- 
-    //     public void PayInstallment(int installmentId, DateOnly paymentDate)
-    //     {
-    //         var installment = GetInstallmentById(installmentId);
-    //         if (installment == null)
-    //             throw new InstallmentNotFoundException();
-    //
-    //         installment.PaymentTime = paymentDate;
-    //         installment.Status = paymentDate <= installment.DueTime 
-    //             ? InstallmentStatus.PaidOnTime 
-    //             : InstallmentStatus.PaidWithDelay;
-    //
-    //         UpdateInstallment(installment);
-    //     }
-    // }
+    public void PayInstallment(int installmentId,PayInstallmentDto dto)
+    {
+        var installment = installmentRepository.Find(installmentId)
+                          ?? throw new InstallmentNotFoundException();
+        if (installment.PaymentTime != null || installment.Status != InstallmentStatus.Pending)
+            throw new InstallmentAlreadyPaidException();
+        
+        installment.PaymentTime = dto.PaymentTime;
+        installment.Status = dto.PaymentTime <= installment.DueTime 
+            ? InstallmentStatus.PaidOnTime 
+            : InstallmentStatus.PaidWithDelay;
+        installmentRepository.Update(installment);
+        unitOfWork.Save();
+    }
 }

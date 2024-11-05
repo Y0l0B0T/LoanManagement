@@ -11,8 +11,8 @@ public class LoanBuilder
     {
         _loan = new Loan
         {
-            CreationDate = DateOnly.FromDateTime(DateTime.Now),
-            Status = LoanStatus.UnderReview
+            CreationDate = new DateOnly(2020, 01,01),
+            Status = LoanStatus.UnderReview,
         };
     }
 
