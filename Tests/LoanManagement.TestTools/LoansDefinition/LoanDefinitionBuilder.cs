@@ -12,13 +12,8 @@ public class LoanDefinitionBuilder
     {
         _loanDefinition = new LoanDefinition
         {
-            LoanAmount = 1000000m,
-            InstallmentsCount = 12,
-            InterestRate = 0.15m,
-            BasePaymentAmount = Math.Round(83333.33m, 2),
-            InstallmentAmount = Math.Round(95833.33m, 2),
-            MonthlyInterestAmount = Math.Round(12500m, 2),
-            MonthlyPenaltyAmount = Math.Round(1916.67m, 2),
+            LoanAmount = 100.00m,
+            InstallmentsCount = 4,
             Name = "ShortTerm"
         };
     }

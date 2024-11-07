@@ -13,6 +13,7 @@ public class LoanBuilder
         {
             CreationDate = new DateOnly(2020, 01,01),
             Status = LoanStatus.UnderReview,
+            LoanType = "ShortTerm"
         };
     }
 

@@ -165,6 +165,7 @@ public class LoanAppService(
     {
         if (monthlyIncome > 10000000) return 20;
         if (monthlyIncome >= 5000000 && monthlyIncome <= 10000000) return 10;
+        if (monthlyIncome < 5000000) return 0;
         return 0;
     }
 

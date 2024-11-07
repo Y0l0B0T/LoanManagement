@@ -1,6 +1,7 @@
 ﻿using LoanManagement.Entities.LoansDefinition;
 using LoanManagement.Services.Admins.Contracts.Interfaces;
 using LoanManagement.Services.Admins.Exceptions;
+using LoanManagement.Services.Loans.Contracts.Interfaces;
 using LoanManagement.Services.LoansDefinition.Contracts.DTOs;
 using LoanManagement.Services.LoansDefinition.Contracts.Interfaces;
 using LoanManagement.Services.UnitOfWorks;
@@ -32,10 +33,10 @@ public class LoanDefinitionAppService(
             InterestRate = CalculateInterestRate(installmentsCount),
         };
 
-        loan.MonthlyInterestAmount = CalculateMonthlyInterestAmount(loanAmount, loan.InterestRate);
-        loan.BasePaymentAmount = CalculateBasePaymentAmount(loanAmount, installmentsCount);
-        loan.InstallmentAmount = CalculateInstallmentAmount(loan.BasePaymentAmount, loan.MonthlyInterestAmount);
-        loan.MonthlyPenaltyAmount = CalculateMonthlyPenaltyAmount(loan.InstallmentAmount);
+        loan.MonthlyInterestAmount = Math.Round(CalculateMonthlyInterestAmount(loanAmount, loan.InterestRate), 2);
+        loan.BasePaymentAmount = Math.Round(CalculateBasePaymentAmount(loanAmount, installmentsCount), 2);
+        loan.InstallmentAmount = Math.Round(CalculateInstallmentAmount(loan.BasePaymentAmount, loan.MonthlyInterestAmount), 2);
+        loan.MonthlyPenaltyAmount = Math.Round(CalculateMonthlyPenaltyAmount(loan.InstallmentAmount), 2);
 
         return loan;
     }
