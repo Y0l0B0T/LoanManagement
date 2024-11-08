@@ -14,54 +14,57 @@ public class EFReportQuery(EfDataContext context) : ReportQuery
 {
     public HashSet<ReportActiveLoanDto> ReportActiveLoan()
     {
-        var activeLoans = 
-            (from loan in context.Set<Loan>()
-                join installment in context.Set<Installment>() on loan.Id equals installment.LoanId
-                join loanDefinition in context.Set<LoanDefinition>() on loan.LoanDefinitionId equals loanDefinition.Id
-                where loan.Status == LoanStatus.Paying || loan.Status == LoanStatus.DelayInPaying
-                select new
+        var query =
+            context.Set<Loan>()
+                .Where(loan => loan.Status == LoanStatus.Paying || loan.Status == LoanStatus.DelayInPaying)
+                .Select(loan => new
                 {
                     LoanId = loan.Id,
+                    loan.CustomerId,
+                    loan.Status,
+                    loan.LoanType,
+                    Installments = loan.Installments
+                        .Select(installment => new
+                        {
+                            InstallmentId = installment.Id,
+                            loan.LoanDefinition.InstallmentAmount,
+                            PenaltyAmount = installment.PaymentTime > installment.DueTime
+                                ? loan.LoanDefinition.MonthlyPenaltyAmount
+                                : 0,
+                            installment.DueTime,
+                            InstallmentStatus = installment.Status,
+                            installment.PaymentTime
+                        })
+                })
+                .AsEnumerable()
+                .Select(loan => new ReportActiveLoanDto
+                {
+                    Id = loan.LoanId,
                     CustomerId = loan.CustomerId,
                     Status = loan.Status,
                     LoanType = loan.LoanType,
-                    InstallmentId = installment.Id,
-                    InstallmentAmount = loanDefinition.InstallmentAmount,
-                    PenaltyAmount = installment.PaymentTime > installment.DueTime ? loanDefinition.MonthlyPenaltyAmount : 0,
-                    DueTime = installment.DueTime,
-                    InstallmentStatus = installment.Status,
-                    PaymentTime = installment.PaymentTime
+                    PaymentAmount = loan.Installments
+                        .Where(i => i.PaymentTime.HasValue || i.InstallmentStatus != InstallmentStatus.Pending)
+                        .Sum(i => i.InstallmentAmount + i.PenaltyAmount),
+                    PendingInstallments = loan.Installments
+                        .Where(i => i.InstallmentStatus == InstallmentStatus.Pending || !i.PaymentTime.HasValue)
+                        .Select(i => new GetPendingInstallmentsByLoanIdDto
+                        {
+                            Id = i.InstallmentId,
+                            DueTime = i.DueTime,
+                            Status = i.InstallmentStatus
+                        })
+                        .ToHashSet()
                 })
-            .AsEnumerable()
-            .GroupBy(l => new { l.LoanId, l.CustomerId, l.Status, l.LoanType })
-            .Select(g => new ReportActiveLoanDto
-            {
-                Id = g.Key.LoanId,
-                CustomerId = g.Key.CustomerId,
-                Status = g.Key.Status,
-                LoanType = g.Key.LoanType,
-                PaymentAmount = g
-                    .Where(i => i.PaymentTime.HasValue || i.InstallmentStatus != InstallmentStatus.Pending)
-                    .Sum(i => i.InstallmentAmount + i.PenaltyAmount),
-                PendingInstallments = g
-                    .Where(i => i.InstallmentStatus == InstallmentStatus.Pending || !i.PaymentTime.HasValue)
-                    .Select(i => new GetPendingInstallmentsByLoanId
-                    {
-                        Id = i.InstallmentId,
-                        DueTime = i.DueTime,
-                        Status = i.InstallmentStatus
-                    })
-                    .ToHashSet()
-            })
-            .ToHashSet();
-
-        return activeLoans;
+                .ToHashSet();
+        return query;
     }
+
     public HashSet<ReportAllRiskyCustomersDto> ReportAllRiskyCustomers()
     {
         var today = DateOnly.FromDateTime(DateTime.Today);
 
-        var riskyCustomers = 
+        var query =
             (from customer in context.Set<Customer>()
                 join loan in context.Set<Loan>() on customer.Id equals loan.CustomerId
                 join installment in context.Set<Installment>() on loan.Id equals installment.LoanId
@@ -80,30 +83,34 @@ public class EFReportQuery(EfDataContext context) : ReportQuery
                     DelayedInstallmentCount = g.Count()
                 })
             .ToHashSet();
-        return riskyCustomers;
+        return query;
     }
-    
-    public HashSet<ReportMonthlyIncomeDto> ReportMonthlyIncome(DateOnly date)
+
+    public ReportMonthlyIncomeDto ReportMonthlyIncome(DateOnly date)
     {
-        var query = context.Set<Loan>()
+        var incomeData = context.Set<Loan>()
             .Join(context.Set<Installment>(),
                 loan => loan.Id,
                 installment => installment.LoanId,
                 (loan, installment) => new { loan, installment })
-            .Where(li => li.installment.PaymentTime.HasValue 
+            .Where(li => li.installment.PaymentTime.HasValue
                          && li.installment.PaymentTime.Value.Month == date.Month)
-            .GroupBy(li => li.loan.Id)
-            .Select(g => new ReportMonthlyIncomeDto
+            .Select(li => new
             {
-                TotalIncomeFromInterest = g.Sum(li => li.loan.LoanDefinition.MonthlyInterestAmount),
-                TotalIncomeFromPenalty = g.Sum(li => li.installment.PaymentTime > li.installment.DueTime
+                MonthlyInterest = li.loan.LoanDefinition.MonthlyInterestAmount,
+                MonthlyPenalty = li.installment.PaymentTime > li.installment.DueTime
                     ? li.loan.LoanDefinition.MonthlyPenaltyAmount
-                    : 0)
-            })
-            .ToHashSet();
-
-        return query;
+                    : 0
+            });
+        var totalIncome = new ReportMonthlyIncomeDto
+        {
+            TotalIncomeFromInterest = incomeData.Sum(x => x.MonthlyInterest),
+            TotalIncomeFromPenalty = incomeData.Sum(x => x.MonthlyPenalty)
+        };
+        return totalIncome;
     }
+
+
     public HashSet<ReportAllClosedLoanDto> ReportAllClosedLoan()
     {
         return context.Set<Loan>()
@@ -121,51 +128,41 @@ public class EFReportQuery(EfDataContext context) : ReportQuery
                 LoanType = l.LoanType,
                 LoanAmount = l.LoanDefinition.LoanAmount,
                 TotalPenaltyAmount = Math.Round(
-                    l.Installments.Count(i => i.PaymentTime > i.DueTime && i.Status == InstallmentStatus.PaidWithDelay)
+                    l.Installments.Count(i => i.PaymentTime > i.DueTime &&
+                                              i.Status == InstallmentStatus.PaidWithDelay)
                     * l.LoanDefinition.MonthlyPenaltyAmount, 2)
             }).ToHashSet();
     }
-    
-    
-    
-    
 
-    // public HashSet<ReportAllClosedLoanDto> ReportAllClosedLoan()
+    // public ReportMonthlyIncomeDto ReportPredictMonthlyIncome(ReportPredictDto dto)
     // {
-    //     return context.Set<Loan>()
-    //         .Include(_ => _.Installments)
-    //         .Where(l => l.Status == LoanStatus.Closed)
-    //         .Select(l => new ReportAllClosedLoanDto
+    //     var currentDate = DateOnly.FromDateTime(DateTime.Today);
+    //     
+    //     var incomeData = context.Set<Loan>()
+    //         .Join(context.Set<Installment>(),
+    //             loan => loan.Id,
+    //             installment => installment.LoanId,
+    //             (loan, installment) => new { loan, installment })
+    //         .Where(li => li.installment.PaymentTime.HasValue
+    //                      && li.installment.PaymentTime.Value >= currentDate.AddMonths(-dto.MonthsToRetrieve)
+    //                      && li.installment.PaymentTime.Value <= currentDate)
+    //         .Select(li => new
     //         {
-    //             Id = l.Id,
-    //             CustomerId = l.CustomerId,
-    //             FirstName = context.Set<Customer>().Where(c => c.Id == l.CustomerId).First().FirstName,
-    //             LastName = context.Set<Customer>().Where(c => c.Id == l.CustomerId).Last().LastName,
-    //             NationalCode = context.Set<Customer>().Where(c => c.Id == l.CustomerId).First().NationalCode,
-    //             LoanDefinitionId = l.LoanDefinitionId,
-    //             InstallmentsCount = l.LoanDefinition.InstallmentsCount,
-    //             LoanType = l.LoanType,
-    //             LoanAmount = l.LoanDefinition.LoanAmount,
-    //             TotalPenaltyAmount = l.Installments
-    //                                      .Count(i => i.PaymentTime > i.DueTime &&
-    //                                                  i.Status == InstallmentStatus.PaidWithDelay)
-    //                                  * l.LoanDefinition.MonthlyPenaltyAmount
-    //         }).ToHashSet();
-    // }
-    // public List<GetAllClosedDto> GetAllClosed()
-    // {
-    //     return context.Set<Loan>().Where(l => l.LoanStatus == LoanStatus.Closed)
-    //         .Select(l => new GetAllClosedDto
-    //         {
-    //             Id = l.Id,
-    //             LoanFormatId = l.LoanFormatId,
-    //             CustomerId = l.CustomerId,
-    //             ValidationScore = l.ValidationScore,
-    //             LoanAmount = l.LoanFormat.Amount,
-    //             InstallmentsCount = l.Installments.Count,
-    //             TotalPenaltyAmount =
-    //                 l.Installments.Count(i => i.PaidDate > i.ShouldPayDate) *
-    //                 l.LoanFormat.MonthlyPenaltyAmount,
-    //         }).ToList();
+    //             MonthlyInterest = li.loan.LoanDefinition.MonthlyInterestAmount,
+    //             MonthlyPenalty = li.installment.PaymentTime > li.installment.DueTime
+    //                 ? li.loan.LoanDefinition.MonthlyPenaltyAmount
+    //                 : 0
+    //         })
+    //         .ToList();
+    //     
+    //     var averageInterestIncome = incomeData.Average(x => x.MonthlyInterest);
+    //     var averagePenaltyIncome = incomeData.Average(x => x.MonthlyPenalty);
+    //     
+    //     var predictedIncome = new ReportMonthlyIncomeDto
+    //     {
+    //         TotalIncomeFromInterest = averageInterestIncome * dto.MonthsToPredict,
+    //         TotalIncomeFromPenalty = averagePenaltyIncome * dto.MonthsToPredict
+    //     };
+    //     return predictedIncome;
     // }
 }

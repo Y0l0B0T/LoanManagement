@@ -2,7 +2,7 @@
 
 namespace LoanManagement.Services.Loans.Contracts.DTOs;
 
-public class GetPendingInstallmentsByLoanId
+public class GetPendingInstallmentsByLoanIdDto
 {
     public int Id { get; set; }
     public DateOnly DueTime { get; set; }

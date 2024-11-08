@@ -18,8 +18,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\Admins\" />
-      <Folder Include="Controllers\Customers\" />
       <Folder Include="Controllers\installments\" />
       <Folder Include="Controllers\LoansDefinition\" />
       <Folder Include="Controllers\Loans\" />

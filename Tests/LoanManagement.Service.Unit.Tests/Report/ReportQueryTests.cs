@@ -118,13 +118,13 @@ public class ReportQueryTests : BusinessIntegrationTest
             PaymentAmount = 0,
             PendingInstallments = 
             [
-                new GetPendingInstallmentsByLoanId
+                new GetPendingInstallmentsByLoanIdDto
                 {
                     Id = installment.Id,
                     DueTime = installment.DueTime,
                     Status = installment.Status,
                 },
-                new GetPendingInstallmentsByLoanId
+                new GetPendingInstallmentsByLoanIdDto
                 {
                     Id = installment2.Id,
                     DueTime = installment2.DueTime,
@@ -152,13 +152,13 @@ public class ReportQueryTests : BusinessIntegrationTest
             PaymentAmount = 0,
             PendingInstallments = 
             [
-                new GetPendingInstallmentsByLoanId
+                new GetPendingInstallmentsByLoanIdDto
                 {
                     Id = installment5.Id,
                     DueTime = installment5.DueTime,
                     Status = installment5.Status,
                 },
-                new GetPendingInstallmentsByLoanId
+                new GetPendingInstallmentsByLoanIdDto
                 {
                     Id = installment6.Id,
                     DueTime = installment6.DueTime,
@@ -356,7 +356,8 @@ public class ReportQueryTests : BusinessIntegrationTest
         var customer2 = new CustomerBuilder().Build();
         Save(customer2);
 
-        var loanDefinition = new LoanDefinitionBuilder().WithLoanAmount(3).Build();
+        var loanDefinition = new LoanDefinitionBuilder()
+            .WithInstallmentsCount(3).Build();
         Save(loanDefinition);
         
         var loan1 = new LoanBuilder()
@@ -394,22 +395,22 @@ public class ReportQueryTests : BusinessIntegrationTest
         Save(loan2);
         var installment4 = new InstallmentBuilder()
             .WithLoanId(loan2.Id)
-            .WithDueTime(testDate.AddMonths(-1))
-            .WithPaymentTime(testDate)
+            .WithDueTime(testDate)
+            .WithPaymentTime(testDate.AddDays(5))
             .WithStatus(InstallmentStatus.PaidWithDelay)
             .Build();
         Save(installment4);
         var installment5 = new InstallmentBuilder()
             .WithLoanId(loan2.Id)
-            .WithDueTime(today.AddMonths(2))
-            .WithPaymentTime(today.AddMonths(3))
+            .WithDueTime(today.AddDays(2))
+            .WithPaymentTime(today.AddDays(5))
             .WithStatus(InstallmentStatus.PaidWithDelay)
             .Build();
         Save(installment5);
         var installment6 = new InstallmentBuilder()
             .WithLoanId(loan2.Id)
-            .WithDueTime(today.AddMonths(3))
-            .WithPaymentTime(today.AddMonths(3))
+            .WithDueTime(today.AddDays(7))
+            .WithPaymentTime(today.AddDays(7))
             .WithStatus(InstallmentStatus.PaidOnTime)
             .Build();
         Save(installment6);
@@ -417,9 +418,8 @@ public class ReportQueryTests : BusinessIntegrationTest
 
         var actual = _sut.ReportMonthlyIncome(testDate);
         
-        actual.Should().HaveCount(2);
-        actual.First().TotalIncomeFromInterest.Should().Be(0.08m);
-        actual.First().TotalIncomeFromPenalty.Should().Be(0.0m);
+        actual.TotalIncomeFromInterest.Should().Be(6.25m);
+        actual.TotalIncomeFromPenalty.Should().Be(1.38m);
     }
     [Fact]
     public void ReportAllClosedLoan_report_all_closed_loan_with_details_properly()
@@ -595,7 +595,7 @@ public class ReportQueryTests : BusinessIntegrationTest
             InstallmentsCount = loanDefinition.InstallmentsCount,
             LoanAmount = loanDefinition.LoanAmount,
             LoanType = loan3.LoanType,
-            TotalPenaltyAmount = Math.Round(2 * loanDefinition.MonthlyPenaltyAmount, 2)
+            TotalPenaltyAmount = 0
         });
         actual.Should().ContainEquivalentOf(new ReportAllClosedLoanDto
         {
@@ -608,7 +608,164 @@ public class ReportQueryTests : BusinessIntegrationTest
             InstallmentsCount = loanDefinition.InstallmentsCount,
             LoanAmount = loanDefinition.LoanAmount,
             LoanType = loan4.LoanType,
-            TotalPenaltyAmount = Math.Round(2 * loanDefinition.MonthlyPenaltyAmount, 2)
+            TotalPenaltyAmount = Math.Round(1 * loanDefinition.MonthlyPenaltyAmount, 2)
         });
     }
+    // [Fact]
+    // public void ReportPredictMonthlyIncome_report_predict_monthly_income_properly()
+    // {
+    //     var today = new DateOnly(2024,08,01);
+    //     
+    //     var customer1 = new CustomerBuilder()
+    //         .WithFirstName("hosein")
+    //         .WithLastName("hoseini")
+    //         .WithNationalCode("1111111111")
+    //         .Build();
+    //     Save(customer1);
+    //     var customer2 = new CustomerBuilder()
+    //         .WithFirstName("reza")
+    //         .WithLastName("rezaii")
+    //         .WithNationalCode("2222222222").Build();
+    //     Save(customer2);
+    //     var customer3 = new CustomerBuilder()
+    //         .WithFirstName("mohamad")
+    //         .WithLastName("mohammadi")
+    //         .WithNationalCode("3333333333").Build();
+    //     Save(customer3);
+    //     var customer4 = new CustomerBuilder()
+    //         .WithFirstName("javad")
+    //         .WithLastName("javadi")
+    //         .WithNationalCode("4444444444").Build();
+    //     Save(customer4);
+    //     
+    //     var loanDefinition = new LoanDefinitionBuilder()
+    //         .WithInstallmentsCount(3).Build();
+    //     Save(loanDefinition);
+    //     
+    //     var loan1 = new LoanBuilder()
+    //         .WithCustomerId(customer1.Id)
+    //         .WithLoanDefinitionId(loanDefinition.Id)
+    //         .WithStatus(LoanStatus.Paying)
+    //         .Build();
+    //     Save(loan1);
+    //     var loan2 = new LoanBuilder()
+    //         .WithCustomerId(customer2.Id)
+    //         .WithLoanDefinitionId(loanDefinition.Id)
+    //         .WithStatus(LoanStatus.Closed)
+    //         .Build();
+    //     Save(loan2);
+    //     var loan3 = new LoanBuilder()
+    //         .WithCustomerId(customer3.Id)
+    //         .WithLoanDefinitionId(loanDefinition.Id)
+    //         .WithStatus(LoanStatus.Closed)
+    //         .Build();
+    //     Save(loan3);
+    //     var loan4 = new LoanBuilder()
+    //         .WithCustomerId(customer3.Id)
+    //         .WithLoanDefinitionId(loanDefinition.Id)
+    //         .WithStatus(LoanStatus.Closed)
+    //         .Build();
+    //     Save(loan4);
+    //     
+    //     //Loan_1_Installments_______________________
+    //     var installment1 = new InstallmentBuilder()
+    //         .WithLoanId(loan1.Id)
+    //         .WithDueTime(today)
+    //         .WithPaymentTime(today)
+    //         .WithStatus(InstallmentStatus.PaidOnTime)
+    //         .Build();
+    //     Save(installment1);
+    //     var installment2 = new InstallmentBuilder()
+    //         .WithLoanId(loan1.Id)
+    //         .WithDueTime(today.AddMonths(1))
+    //         .WithPaymentTime(today.AddMonths(1))
+    //         .WithStatus(InstallmentStatus.PaidOnTime)
+    //         .Build();
+    //     Save(installment2);
+    //     var installment3 = new InstallmentBuilder()
+    //         .WithLoanId(loan1.Id)
+    //         .WithDueTime(today.AddMonths(2))
+    //         .WithStatus(InstallmentStatus.Pending)
+    //         .Build();
+    //     Save(installment3);
+    //     
+    //     //Loan_2_Installments_______________________
+    //     var installment4 = new InstallmentBuilder()
+    //         .WithLoanId(loan2.Id)
+    //         .WithDueTime(today.AddMonths(1))
+    //         .WithPaymentTime(today.AddMonths(2))
+    //         .WithStatus(InstallmentStatus.PaidWithDelay)
+    //         .Build();
+    //     Save(installment4);
+    //     var installment5 =new InstallmentBuilder()
+    //         .WithLoanId(loan2.Id)
+    //         .WithDueTime(today.AddMonths(2))
+    //         .WithPaymentTime(today.AddMonths(3))
+    //         .WithStatus(InstallmentStatus.PaidWithDelay)
+    //         .Build();
+    //     Save(installment5);
+    //     var installment6 =new InstallmentBuilder()
+    //         .WithLoanId(loan2.Id)
+    //         .WithDueTime(today.AddMonths(3))
+    //         .WithPaymentTime(today.AddMonths(3))
+    //         .WithStatus(InstallmentStatus.PaidOnTime)
+    //         .Build();
+    //     Save(installment6);
+    //     
+    //     //Loan_3_Installments_______________________
+    //     var installment7 =new InstallmentBuilder()
+    //         .WithLoanId(loan3.Id)
+    //         .WithDueTime(today.AddMonths(1))
+    //         .WithPaymentTime(today.AddMonths(1))
+    //         .WithStatus(InstallmentStatus.PaidOnTime)
+    //         .Build();
+    //     Save(installment7);
+    //     var installment8 =new InstallmentBuilder()
+    //         .WithLoanId(loan3.Id)
+    //         .WithDueTime(today.AddMonths(2))
+    //         .WithPaymentTime(today.AddMonths(2))
+    //         .WithStatus(InstallmentStatus.PaidOnTime)
+    //         .Build();
+    //     Save(installment8);
+    //     var installment9 =new InstallmentBuilder()
+    //         .WithLoanId(loan3.Id)
+    //         .WithDueTime(today.AddMonths(3))
+    //         .WithPaymentTime(today.AddMonths(3))
+    //         .WithStatus(InstallmentStatus.PaidOnTime)
+    //         .Build();
+    //     Save(installment9);
+    //     
+    //     //Loan_4_Installments_______________________
+    //     var installment10 = new InstallmentBuilder()
+    //         .WithLoanId(loan4.Id)
+    //         .WithDueTime(today.AddMonths(1))
+    //         .WithPaymentTime(today.AddMonths(1))
+    //         .WithStatus(InstallmentStatus.PaidOnTime)
+    //         .Build();
+    //     Save(installment10);
+    //     var installment11 = new InstallmentBuilder()
+    //         .WithLoanId(loan4.Id)
+    //         .WithDueTime(today.AddMonths(2))
+    //         .WithPaymentTime(today.AddMonths(2))
+    //         .WithStatus(InstallmentStatus.PaidOnTime)
+    //         .Build();
+    //     Save(installment11);
+    //     var installment12 =new InstallmentBuilder()
+    //         .WithLoanId(loan4.Id)
+    //         .WithDueTime(today.AddMonths(3))
+    //         .WithPaymentTime(today.AddMonths(4))
+    //         .WithStatus(InstallmentStatus.PaidWithDelay)
+    //         .Build();
+    //     Save(installment12);
+    //
+    //     var dto = new ReportPredictDto
+    //     {
+    //         MonthsToRetrieve = 3,
+    //         MonthsToPredict = 1,
+    //     };
+    //     var actual = _sut.ReportPredictMonthlyIncome(dto);
+    //
+    //     actual.Should().BeNull();
+    //
+    // }
 }

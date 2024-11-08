@@ -1,7 +1,9 @@
-﻿namespace LoanManagement.Services.LoansDefinition.Contracts.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LoanManagement.Services.LoansDefinition.Contracts.DTOs;
 
 public class AddLoanDefinitionDto
 {
-    public decimal LoanAmount { get; set; }
-    public int InstallmentsCount { get; set; }
+    [Range(1, double.MaxValue)]public decimal LoanAmount { get; set; }
+    [Range(1, Int32.MaxValue)]public int InstallmentsCount { get; set; }
 }

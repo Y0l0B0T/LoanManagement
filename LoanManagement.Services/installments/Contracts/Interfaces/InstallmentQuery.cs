@@ -7,5 +7,5 @@ public interface InstallmentQuery
 {
     Installment? GetById(int installmentId);
     HashSet<GetAllInstallmentsDto> GetAll();
-    HashSet<GetallInstallmentsOfLoanDto> GetAllInstallmentsOfLoan(int loanId);
+    HashSet<GetAllInstallmentsOfLoanDto> GetAllInstallmentsOfLoan(int loanId);
 }

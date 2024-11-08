@@ -136,11 +136,11 @@ public class EFLoanQuery(EfDataContext context) : LoanQuery
             }).ToHashSet();
     }
 
-    public HashSet<GetPendingInstallmentsByLoanId> GetPendingInstallmentsByLoanId(int loadId)
+    public HashSet<GetPendingInstallmentsByLoanIdDto> GetPendingInstallmentsByLoanId(int loadId)
     {
         return context.Set<Installment>()
             .Where(i => i.LoanId == loadId && i.Status == InstallmentStatus.Pending)
-            .Select(i => new GetPendingInstallmentsByLoanId
+            .Select(i => new GetPendingInstallmentsByLoanIdDto
             {
                 Id = i.Id,
                 Status = i.Status,

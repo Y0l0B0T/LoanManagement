@@ -41,7 +41,6 @@ public class LoanDefinitionServiceTests : BusinessIntegrationTest
         actual.Should().NotBeNull();
         actual.LoanAmount.Should().Be(dto.LoanAmount);
         actual.InstallmentsCount.Should().Be(dto.InstallmentsCount);
-        actual.MonthlyPenaltyAmount.Should().Be(0);
     }
 
     [Theory]

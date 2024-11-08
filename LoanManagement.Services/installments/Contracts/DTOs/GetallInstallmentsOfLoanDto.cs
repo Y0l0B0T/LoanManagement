@@ -2,7 +2,7 @@
 
 namespace LoanManagement.Services.installments.Contracts.DTOs;
 
-public class GetallInstallmentsOfLoanDto
+public class GetAllInstallmentsOfLoanDto
 {
     public int Id { get; set; }
     public DateOnly DueTime { get; set; }

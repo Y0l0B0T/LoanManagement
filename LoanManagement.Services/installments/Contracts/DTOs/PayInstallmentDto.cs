@@ -1,4 +1,6 @@
-﻿namespace LoanManagement.Services.installments.Contracts.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LoanManagement.Services.installments.Contracts.DTOs;
 
 public class PayInstallmentDto
 {

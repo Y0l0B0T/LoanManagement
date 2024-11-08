@@ -23,11 +23,11 @@ public class EFInstallmentQuery(EfDataContext context) : InstallmentQuery
         }).ToHashSet();
     }
 
-    public HashSet<GetallInstallmentsOfLoanDto> GetAllInstallmentsOfLoan(int loanId)
+    public HashSet<GetAllInstallmentsOfLoanDto> GetAllInstallmentsOfLoan(int loanId)
     {
         return context.Set<Installment>()
             .Where(_ => _.LoanId == loanId)
-            .Select(_ => new GetallInstallmentsOfLoanDto
+            .Select(_ => new GetAllInstallmentsOfLoanDto
             {
                 Id = _.Id,
                 Status = _.Status,

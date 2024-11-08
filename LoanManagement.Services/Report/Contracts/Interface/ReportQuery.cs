@@ -6,6 +6,7 @@ public interface ReportQuery
 {
     HashSet<ReportActiveLoanDto> ReportActiveLoan();
     HashSet<ReportAllRiskyCustomersDto> ReportAllRiskyCustomers();
-    HashSet<ReportMonthlyIncomeDto> ReportMonthlyIncome(DateOnly date);
+    ReportMonthlyIncomeDto ReportMonthlyIncome(DateOnly date);
     HashSet<ReportAllClosedLoanDto> ReportAllClosedLoan();
+    // ReportMonthlyIncomeDto ReportPredictMonthlyIncome(ReportPredictDto dto);
 }

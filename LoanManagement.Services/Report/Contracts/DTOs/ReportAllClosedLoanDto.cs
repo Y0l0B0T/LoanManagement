@@ -8,7 +8,7 @@ public class ReportAllClosedLoanDto
     public string LastName { get; set; }
     public string NationalCode { get; set; }
     public int LoanDefinitionId { get; set; }
-    public string LoanType { get; set; }
+    public string? LoanType { get; set; }
     public decimal LoanAmount { get; set; }
     public int InstallmentsCount { get; set; }
     public decimal TotalPenaltyAmount { get; set; }

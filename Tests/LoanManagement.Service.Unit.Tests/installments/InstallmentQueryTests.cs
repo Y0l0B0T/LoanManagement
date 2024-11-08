@@ -154,14 +154,14 @@ public class InstallmentQueryTests : BusinessIntegrationTest
         
         var actual = _sut.GetAllInstallmentsOfLoan(loan.Id);
         
-        actual.Should().ContainEquivalentOf(new GetallInstallmentsOfLoanDto
+        actual.Should().ContainEquivalentOf(new GetAllInstallmentsOfLoanDto
         {
             Id = installment.Id,
             Status = installment.Status,
             DueTime = installment.DueTime,
             PaymentTime = installment.PaymentTime,
         });
-        actual.Should().ContainEquivalentOf(new GetallInstallmentsOfLoanDto
+        actual.Should().ContainEquivalentOf(new GetAllInstallmentsOfLoanDto
         {
             Id = installment2.Id,
             Status = installment2.Status,
