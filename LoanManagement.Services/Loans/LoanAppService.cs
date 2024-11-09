@@ -1,17 +1,5 @@
-﻿using LoanManagement.Entities.Customers;
-using LoanManagement.Entities.installments;
-using LoanManagement.Entities.Loans;
-using LoanManagement.Entities.LoansDefinition;
-using LoanManagement.Service.Unit.Tests;
-using LoanManagement.Services.Admins.Contracts.Interfaces;
-using LoanManagement.Services.Admins.Exceptions;
-using LoanManagement.Services.Customers.Contracts.Interfaces;
-using LoanManagement.Services.Customers.Exceptions;
-using LoanManagement.Services.Loans.Contracts.DTOs;
-using LoanManagement.Services.Loans.Contracts.Interfaces;
-using LoanManagement.Services.LoansDefinition.Contracts.Interfaces;
+﻿using LoanManagement.Services.Loans.Exceptions;
 using LoanManagement.Services.LoansDefinition.Exceptions;
-using LoanManagement.Services.UnitOfWorks;
 
 namespace LoanManagement.Services.Loans;
 

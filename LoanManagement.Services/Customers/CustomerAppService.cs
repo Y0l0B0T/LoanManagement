@@ -1,12 +1,4 @@
-﻿using LoanManagement.Entities.Customers;
-using LoanManagement.Services.Admins.Contracts.Interfaces;
-using LoanManagement.Services.Admins.Exceptions;
-using LoanManagement.Services.Customers.Contracts.DTOs;
-using LoanManagement.Services.Customers.Contracts.Interfaces;
-using LoanManagement.Services.Customers.Exceptions;
-using LoanManagement.Services.UnitOfWorks;
-
-namespace LoanManagement.Services.Customers;
+﻿namespace LoanManagement.Services.Customers;
 
 public class CustomerAppService(
     AdminRepository adminRepository,

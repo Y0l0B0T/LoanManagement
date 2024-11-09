@@ -1,10 +1,4 @@
-﻿using LoanManagement.Persistence.Ef;
-using LoanManagement.Persistence.Ef.Admins;
-using LoanManagement.Persistence.Ef.Customers;
-using LoanManagement.Persistence.Ef.Loans;
-using LoanManagement.Persistence.Ef.LoansDefinition;
-using LoanManagement.Persistence.Ef.UnitOfWorks;
-using LoanManagement.Services.Loans;
+﻿using LoanManagement.Services.Loans;
 
 namespace LoanManagement.TestTools.Loans;
 

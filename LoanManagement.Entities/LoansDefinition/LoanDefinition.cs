@@ -1,6 +1,4 @@
-﻿using LoanManagement.Entities.Loans;
-
-namespace LoanManagement.Entities.LoansDefinition;
+﻿namespace LoanManagement.Entities.LoansDefinition;
 
 public class LoanDefinition
 {

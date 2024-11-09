@@ -1,6 +1,4 @@
-﻿using LoanManagement.Entities.Admins;
-
-namespace LoanManagement.Services.Admins.Contracts.Interfaces;
+﻿namespace LoanManagement.Services.Admins.Contracts.Interfaces;
 
 public interface AdminRepository
 {

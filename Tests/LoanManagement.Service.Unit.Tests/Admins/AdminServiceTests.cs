@@ -1,13 +1,5 @@
-﻿using FluentAssertions;
-using LoanManagement.Entities.Admins;
-using LoanManagement.Persistence.Ef.Admins;
-using LoanManagement.Persistence.Ef.UnitOfWorks;
-using LoanManagement.Services.Admins;
-using LoanManagement.Services.Admins.Contracts.Interfaces;
-using LoanManagement.Services.Admins.Exceptions;
-using LoanManagement.TestTools.Admins;
-using LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration;
-using Xunit;
+﻿using LoanManagement.Services.Admins;
+using LoanManagement.Services.Admins.Contracts.DTOs;
 
 namespace LoanManagement.Service.Unit.Tests.Admins;
 

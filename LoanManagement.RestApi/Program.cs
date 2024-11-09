@@ -1,5 +1,8 @@
-using LoanManagement.Persistence.Ef;
 using LoanManagement.Persistence.Ef.UnitOfWorks;
+using LoanManagement.Services.Admins;
+using LoanManagement.Services.installments;
+using LoanManagement.Services.Loans;
+using LoanManagement.Services.LoansDefinition;
 using LoanManagement.Services.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +17,28 @@ builder.Services.AddDbContext<EfDataContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<UnitOfWork, EfUnitOfWork>();
+
+builder.Services.AddScoped<AdminService, AdminAppService>();
+builder.Services.AddScoped<AdminQuery, EFAdminQuery>();
+builder.Services.AddScoped<AdminRepository, EFAdminRepository>();
+
+builder.Services.AddScoped<CustomerService, CustomerAppService>();
+builder.Services.AddScoped<CustomerQuery, EFCustomerQuery>();
+builder.Services.AddScoped<CustomerRepository, EFCustomerRepository>();
+
+builder.Services.AddScoped<LoanDefinitionService, LoanDefinitionAppService>();
+builder.Services.AddScoped<LoanDefinitionQuery, EFLoanDefinitionQuery>();
+builder.Services.AddScoped<LoanDefinitionRepository, EFLoanDefinitionRepository>();
+
+builder.Services.AddScoped<LoanService, LoanAppService>();
+builder.Services.AddScoped<LoanQuery, EFLoanQuery>();
+builder.Services.AddScoped<LoanRepository, EFLoanRepository>();
+
+builder.Services.AddScoped<InstallmentService, InstallmentAppService>();
+builder.Services.AddScoped<InstallmentQuery, EFInstallmentQuery>();
+builder.Services.AddScoped<InstallmentRepository, EFInstallmentRepository>();
+
+builder.Services.AddScoped<ReportQuery, EFReportQuery>();
 
 var app = builder.Build();
 

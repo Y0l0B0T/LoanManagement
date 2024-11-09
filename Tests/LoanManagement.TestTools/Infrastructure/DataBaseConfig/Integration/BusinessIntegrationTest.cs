@@ -1,6 +1,3 @@
-using LoanManagement.Persistence.Ef;
-using LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration.Fixtures;
-
 namespace LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration;
 
 public class BusinessIntegrationTest : EFDataContextDatabaseFixture

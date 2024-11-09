@@ -1,7 +1,4 @@
-﻿using LoanManagement.Entities.Loans;
-using LoanManagement.Services.Loans.Contracts.DTOs;
-
-namespace LoanManagement.Services.Loans.Contracts.Interfaces;
+﻿namespace LoanManagement.Services.Loans.Contracts.Interfaces;
 
 public interface LoanRepository
 {

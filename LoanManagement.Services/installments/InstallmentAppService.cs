@@ -1,11 +1,4 @@
-﻿using LoanManagement.Entities.installments;
-using LoanManagement.Services.installments.Contracts.DTOs;
-using LoanManagement.Services.installments.Contracts.Interfaces;
-using LoanManagement.Services.installments.Exceptions;
-using LoanManagement.Services.Loans.Contracts.Interfaces;
-using LoanManagement.Services.UnitOfWorks;
-
-namespace LoanManagement.Services.installments;
+﻿namespace LoanManagement.Services.installments;
 
 public class InstallmentAppService(
     LoanRepository loanRepository,

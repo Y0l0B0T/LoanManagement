@@ -1,8 +1,4 @@
-﻿using LoanManagement.Entities.Admins;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace LoanManagement.Persistence.Ef.Admins;
+﻿namespace LoanManagement.Persistence.Ef.Admins;
 
 public class AdminEntityMap : IEntityTypeConfiguration<Admin>
 {

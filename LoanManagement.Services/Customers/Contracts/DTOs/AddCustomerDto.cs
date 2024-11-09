@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace LoanManagement.Services.Customers.Contracts.DTOs;
+﻿namespace LoanManagement.Services.Customers.Contracts.DTOs;
 
 public class AddCustomerDto
 {

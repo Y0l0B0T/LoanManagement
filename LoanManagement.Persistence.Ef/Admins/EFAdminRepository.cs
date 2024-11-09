@@ -1,7 +1,4 @@
-﻿using LoanManagement.Entities.Admins;
-using LoanManagement.Services.Admins.Contracts.Interfaces;
-
-namespace LoanManagement.Persistence.Ef.Admins;
+﻿namespace LoanManagement.Persistence.Ef.Admins;
 
 public class EFAdminRepository(EfDataContext context) : AdminRepository
 {

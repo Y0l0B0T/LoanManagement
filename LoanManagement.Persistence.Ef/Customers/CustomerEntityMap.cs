@@ -1,8 +1,4 @@
-﻿using LoanManagement.Entities.Customers;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace LoanManagement.Persistence.Ef.Customers;
+﻿namespace LoanManagement.Persistence.Ef.Customers;
 
 public class CustomerEntityMap : IEntityTypeConfiguration<Customer>
 {

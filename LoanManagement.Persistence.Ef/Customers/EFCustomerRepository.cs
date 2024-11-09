@@ -1,7 +1,4 @@
-﻿using LoanManagement.Entities.Customers;
-using LoanManagement.Services.Customers.Contracts.Interfaces;
-
-namespace LoanManagement.Persistence.Ef.Customers;
+﻿namespace LoanManagement.Persistence.Ef.Customers;
 
 public class EFCustomerRepository(EfDataContext context) : CustomerRepository
 {

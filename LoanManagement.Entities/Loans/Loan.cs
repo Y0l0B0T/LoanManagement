@@ -1,8 +1,4 @@
-﻿using LoanManagement.Entities.Customers;
-using LoanManagement.Entities.installments;
-using LoanManagement.Entities.LoansDefinition;
-
-namespace LoanManagement.Entities.Loans;
+﻿namespace LoanManagement.Entities.Loans;
 
 public class Loan
 {

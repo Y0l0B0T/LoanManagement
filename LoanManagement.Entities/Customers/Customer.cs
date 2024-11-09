@@ -1,6 +1,4 @@
-﻿using LoanManagement.Entities.Loans;
-
-namespace LoanManagement.Entities.Customers;
+﻿namespace LoanManagement.Entities.Customers;
 
 public class Customer
 {

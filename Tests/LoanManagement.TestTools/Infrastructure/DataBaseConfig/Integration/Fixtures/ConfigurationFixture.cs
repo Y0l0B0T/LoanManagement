@@ -1,6 +1,3 @@
-using Microsoft.Extensions.Configuration;
-using Xunit;
-
 namespace LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration.Fixtures;
 
 public class ConfigurationFixture

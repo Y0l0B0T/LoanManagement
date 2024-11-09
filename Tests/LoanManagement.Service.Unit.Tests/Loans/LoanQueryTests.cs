@@ -1,14 +1,5 @@
-﻿using FluentAssertions;
-using LoanManagement.Entities.Customers;
-using LoanManagement.Entities.Loans;
-using LoanManagement.Persistence.Ef.Loans;
-using LoanManagement.Services.Loans.Contracts.DTOs;
+﻿using LoanManagement.Persistence.Ef.Loans;
 using LoanManagement.Services.Loans.Contracts.Interfaces;
-using LoanManagement.TestTools.Customers;
-using LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration;
-using LoanManagement.TestTools.Loans;
-using LoanManagement.TestTools.LoansDefinition;
-using Xunit;
 
 namespace LoanManagement.Service.Unit.Tests.Loans;
 

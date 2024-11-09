@@ -1,10 +1,4 @@
-﻿using LoanManagement.Persistence.Ef;
-using LoanManagement.Persistence.Ef.Admins;
-using LoanManagement.Persistence.Ef.Customers;
-using LoanManagement.Persistence.Ef.UnitOfWorks;
-using LoanManagement.Services.Customers;
-
-namespace LoanManagement.TestTools.Customers;
+﻿namespace LoanManagement.TestTools.Customers;
 
 public static class CustomerServiceFactory
 {

@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace LoanManagement.TestTools.Infrastructure.DataBaseConfig;
 
 public static class DbContextHelper

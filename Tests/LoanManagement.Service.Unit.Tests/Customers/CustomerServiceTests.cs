@@ -1,16 +1,4 @@
-﻿using FluentAssertions;
-using LoanManagement.Entities.Admins;
-using LoanManagement.Entities.Customers;
-using LoanManagement.Services.Admins.Exceptions;
-using LoanManagement.Services.Customers.Contracts.DTOs;
-using LoanManagement.Services.Customers.Contracts.Interfaces;
-using LoanManagement.Services.Customers.Exceptions;
-using LoanManagement.TestTools.Admins;
-using LoanManagement.TestTools.Customers;
-using LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration;
-using Xunit;
-
-namespace LoanManagement.Service.Unit.Tests.Customers;
+﻿namespace LoanManagement.Service.Unit.Tests.Customers;
 
 public class CustomerServiceTests : BusinessIntegrationTest
 {

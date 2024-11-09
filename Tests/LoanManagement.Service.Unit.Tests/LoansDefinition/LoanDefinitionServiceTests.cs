@@ -1,12 +1,6 @@
-﻿using FluentAssertions;
-using LoanManagement.Entities.LoansDefinition;
-using LoanManagement.Services.Admins.Exceptions;
+﻿using LoanManagement.Entities.LoansDefinition;
 using LoanManagement.Services.LoansDefinition.Contracts.DTOs;
 using LoanManagement.Services.LoansDefinition.Contracts.Interfaces;
-using LoanManagement.TestTools.Admins;
-using LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration;
-using LoanManagement.TestTools.LoansDefinition;
-using Xunit;
 
 namespace LoanManagement.Service.Unit.Tests.LoansDefinition;
 

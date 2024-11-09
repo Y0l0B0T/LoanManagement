@@ -1,9 +1,4 @@
-﻿using LoanManagement.Persistence.Ef;
-using LoanManagement.Persistence.Ef.Admins;
-using LoanManagement.Persistence.Ef.UnitOfWorks;
-using LoanManagement.Services.Admins;
-
-namespace LoanManagement.TestTools.Admins;
+﻿namespace LoanManagement.TestTools.Admins;
 
 public static class AdminServiceFactory
 {

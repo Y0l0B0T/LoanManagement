@@ -1,8 +1,4 @@
-﻿using LoanManagement.Entities.LoansDefinition;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace LoanManagement.Persistence.Ef.LoansDefinition;
+﻿namespace LoanManagement.Persistence.Ef.LoansDefinition;
 
 public class LoanDefinitionEntityMap : IEntityTypeConfiguration<LoanDefinition>
 {

@@ -1,7 +1,4 @@
-﻿using LoanManagement.Entities.LoansDefinition;
-using LoanManagement.Services.LoansDefinition.Contracts.DTOs;
-
-namespace LoanManagement.Services.LoansDefinition.Contracts.Interfaces;
+﻿namespace LoanManagement.Services.LoansDefinition.Contracts.Interfaces;
 
 public interface LoanDefinitionQuery
 {

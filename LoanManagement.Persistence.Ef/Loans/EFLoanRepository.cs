@@ -1,11 +1,4 @@
-﻿using LoanManagement.Entities.Customers;
-using LoanManagement.Entities.installments;
-using LoanManagement.Entities.Loans;
-using LoanManagement.Services.Loans.Contracts.DTOs;
-using LoanManagement.Services.Loans.Contracts.Interfaces;
-using Microsoft.EntityFrameworkCore;
-
-namespace LoanManagement.Persistence.Ef.Loans;
+﻿namespace LoanManagement.Persistence.Ef.Loans;
 
 public class EFLoanRepository(EfDataContext context) : LoanRepository
 {

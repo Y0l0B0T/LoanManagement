@@ -1,8 +1,4 @@
-﻿using LoanManagement.Entities.Loans;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace LoanManagement.Persistence.Ef.Loans;
+﻿namespace LoanManagement.Persistence.Ef.Loans;
 
 public class LoanEntityMap : IEntityTypeConfiguration<Loan>
 {

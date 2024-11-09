@@ -1,12 +1,4 @@
-﻿using System.Security.Cryptography;
-using LoanManagement.Entities.Customers;
-using LoanManagement.Entities.installments;
-using LoanManagement.Entities.Loans;
-using LoanManagement.Entities.LoansDefinition;
-using LoanManagement.Services.Loans.Contracts.DTOs;
-using LoanManagement.Services.Report.Contracts.DTOs;
-using LoanManagement.Services.Report.Contracts.Interface;
-using Microsoft.EntityFrameworkCore;
+﻿using LoanManagement.Services.Report.Contracts.Interface;
 
 namespace LoanManagement.Persistence.Ef.Report;
 

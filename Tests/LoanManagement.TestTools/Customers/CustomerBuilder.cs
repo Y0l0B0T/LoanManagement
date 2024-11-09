@@ -1,7 +1,4 @@
-﻿using LoanManagement.Entities.Customers;
-using LoanManagement.Entities.Loans;
-
-namespace LoanManagement.TestTools.Customers;
+﻿namespace LoanManagement.TestTools.Customers;
 
 public class CustomerBuilder
 {

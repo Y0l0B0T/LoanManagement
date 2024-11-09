@@ -1,8 +1,4 @@
-﻿using LoanManagement.Entities.installments;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace LoanManagement.Persistence.Ef.installments;
+﻿namespace LoanManagement.Persistence.Ef.installments;
 
 public class InstallmentEntityMap : IEntityTypeConfiguration<Installment>
 {

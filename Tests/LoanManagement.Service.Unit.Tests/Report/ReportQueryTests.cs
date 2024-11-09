@@ -1,17 +1,6 @@
-﻿using FluentAssertions;
-using LoanManagement.Entities.Customers;
-using LoanManagement.Entities.installments;
-using LoanManagement.Entities.Loans;
-using LoanManagement.Persistence.Ef.Report;
-using LoanManagement.Services.Loans.Contracts.DTOs;
+﻿using LoanManagement.Persistence.Ef.Report;
 using LoanManagement.Services.Report.Contracts.DTOs;
 using LoanManagement.Services.Report.Contracts.Interface;
-using LoanManagement.TestTools.Customers;
-using LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration;
-using LoanManagement.TestTools.installments;
-using LoanManagement.TestTools.Loans;
-using LoanManagement.TestTools.LoansDefinition;
-using Xunit;
 
 namespace LoanManagement.Service.Unit.Tests.Report;
 
@@ -36,7 +25,7 @@ public class ReportQueryTests : BusinessIntegrationTest
             .Build();
         Save(customer);
         var loanDefinition = new LoanDefinitionBuilder()
-            .WithInstallmentsCount(6)
+            .WithInstallmentsCount(2)
             .WithLoanAmount(10000000).Build();
         Save(loanDefinition);
         
@@ -49,6 +38,26 @@ public class ReportQueryTests : BusinessIntegrationTest
             .WithLoanType("ShortTerm")
             .Build();
         Save(loan);
+        
+        var loan2 = new LoanBuilder()
+            .WithCustomerId(customer.Id)
+            .WithLoanDefinitionId(loanDefinition.Id)
+            .WithStatus(LoanStatus.Paying)
+            .WithValidationScore(65)
+            .WithLoanType("ShortTerm")
+            .Build();
+        Save(loan2);
+        
+        var loan3 = new LoanBuilder()
+            .WithCustomerId(customer.Id)
+            .WithLoanDefinitionId(loanDefinition.Id)
+            .WithStatus(LoanStatus.Paying)
+            .WithValidationScore(65)
+            .WithLoanType("ShortTerm")
+            .Build();
+        Save(loan3);
+        
+        //Loan_1_Installments_______________________
         var installment = new InstallmentBuilder()
             .WithLoanId(loan.Id)
             .WithStatus(InstallmentStatus.Pending)
@@ -62,14 +71,8 @@ public class ReportQueryTests : BusinessIntegrationTest
             .Build();
         Save(installment2);
         
-        var loan2 = new LoanBuilder()
-            .WithCustomerId(customer.Id)
-            .WithLoanDefinitionId(loanDefinition.Id)
-            .WithStatus(LoanStatus.Paying)
-            .WithValidationScore(65)
-            .WithLoanType("ShortTerm")
-            .Build();
-        Save(loan2);
+        
+        //Loan_2_Installments_______________________
         var installment3 = new InstallmentBuilder()
             .WithLoanId(loan2.Id)
             .WithStatus(InstallmentStatus.PaidOnTime)
@@ -85,14 +88,8 @@ public class ReportQueryTests : BusinessIntegrationTest
             .Build();
         Save(installment4);
         
-        var loan3 = new LoanBuilder()
-            .WithCustomerId(customer.Id)
-            .WithLoanDefinitionId(loanDefinition.Id)
-            .WithStatus(LoanStatus.Paying)
-            .WithValidationScore(65)
-            .WithLoanType("ShortTerm")
-            .Build();
-        Save(loan3);
+        
+        //Loan_3_Installments_______________________
         var installment5 = new InstallmentBuilder()
             .WithLoanId(loan3.Id)
             .WithStatus(InstallmentStatus.Pending)
@@ -184,6 +181,7 @@ public class ReportQueryTests : BusinessIntegrationTest
         var loanDefinition = new LoanDefinitionBuilder().WithLoanAmount(3).Build();
         Save(loanDefinition);
         
+        
         var loan1 = new LoanBuilder()
             .WithCustomerId(customer1.Id)
             .WithLoanDefinitionId(loanDefinition.Id)
@@ -191,6 +189,35 @@ public class ReportQueryTests : BusinessIntegrationTest
             .Build();
         Save(loan1);
         
+        var loan2 = new LoanBuilder()
+            .WithCustomerId(customer2.Id)
+            .WithLoanDefinitionId(loanDefinition.Id)
+            .WithStatus(LoanStatus.Closed)
+            .Build();
+        Save(loan2);
+        
+        var loan3 = new LoanBuilder()
+            .WithCustomerId(customer3.Id)
+            .WithLoanDefinitionId(loanDefinition.Id)
+            .WithStatus(LoanStatus.Closed)
+            .Build();
+        Save(loan3);
+        
+        var loan4 = new LoanBuilder()
+            .WithCustomerId(customer4.Id)
+            .WithLoanDefinitionId(loanDefinition.Id)
+            .WithStatus(LoanStatus.DelayInPaying)
+            .Build();
+        Save(loan4);
+        
+        var loan5 = new LoanBuilder()
+            .WithCustomerId(customer4.Id)
+            .WithLoanDefinitionId(loanDefinition.Id)
+            .WithStatus(LoanStatus.Closed)
+            .Build();
+        Save(loan5);
+        
+        //Loan_1_Installments_______________________
         var installment1 = new InstallmentBuilder()
             .WithLoanId(loan1.Id)
             .WithDueTime(today.AddMonths(1))
@@ -212,13 +239,7 @@ public class ReportQueryTests : BusinessIntegrationTest
             .Build();
         Save(installment3);
         
-        var loan2 = new LoanBuilder()
-            .WithCustomerId(customer2.Id)
-            .WithLoanDefinitionId(loanDefinition.Id)
-            .WithStatus(LoanStatus.Closed)
-            .Build();
-        Save(loan2);
-        
+        //Loan_2_Installments_______________________
         var installment4 =new InstallmentBuilder()
             .WithLoanId(loan2.Id)
             .WithDueTime(today.AddMonths(1))
@@ -241,13 +262,8 @@ public class ReportQueryTests : BusinessIntegrationTest
                 .Build();
         Save(installment6);
         
-        var loan3 = new LoanBuilder()
-            .WithCustomerId(customer3.Id)
-            .WithLoanDefinitionId(loanDefinition.Id)
-            .WithStatus(LoanStatus.Closed)
-            .Build();
-        Save(loan3);
         
+        //Loan_3_Installments_______________________
         var installment7 = new InstallmentBuilder()
             .WithLoanId(loan3.Id)
             .WithDueTime(today.AddMonths(1))
@@ -270,13 +286,8 @@ public class ReportQueryTests : BusinessIntegrationTest
             .Build();
         Save(installment9);
         
-        var loan4 = new LoanBuilder()
-            .WithCustomerId(customer4.Id)
-            .WithLoanDefinitionId(loanDefinition.Id)
-            .WithStatus(LoanStatus.DelayInPaying)
-            .Build();
-        Save(loan4);
         
+        //Loan_4_Installments_______________________
         var installment10 = new InstallmentBuilder()
             .WithLoanId(loan4.Id)
             .WithDueTime(today.AddMonths(-2))
@@ -296,13 +307,7 @@ public class ReportQueryTests : BusinessIntegrationTest
             .Build();
         Save(installment12);
         
-        var loan5 = new LoanBuilder()
-            .WithCustomerId(customer4.Id)
-            .WithLoanDefinitionId(loanDefinition.Id)
-            .WithStatus(LoanStatus.Closed)
-            .Build();
-        Save(loan5);
-        
+        //Loan_5_Installments_______________________
         var installment13 = new InstallmentBuilder()
             .WithLoanId(loan5.Id)
             .WithDueTime(today.AddMonths(1))
@@ -367,6 +372,14 @@ public class ReportQueryTests : BusinessIntegrationTest
             .Build();
         Save(loan1);
         
+        var loan2 = new LoanBuilder()
+            .WithCustomerId(customer2.Id)
+            .WithLoanDefinitionId(loanDefinition.Id)
+            .WithStatus(LoanStatus.Closed)
+            .Build();
+        Save(loan2);
+        
+        //Loan_1_Installments_______________________
         var installment1 = new InstallmentBuilder()
             .WithLoanId(loan1.Id)
             .WithDueTime(testDate)
@@ -387,12 +400,8 @@ public class ReportQueryTests : BusinessIntegrationTest
             .WithStatus(InstallmentStatus.Pending)
             .Build();
         Save(installment3);
-        var loan2 = new LoanBuilder()
-            .WithCustomerId(customer2.Id)
-            .WithLoanDefinitionId(loanDefinition.Id)
-            .WithStatus(LoanStatus.Closed)
-            .Build();
-        Save(loan2);
+        
+        //Loan_2_Installments_______________________
         var installment4 = new InstallmentBuilder()
             .WithLoanId(loan2.Id)
             .WithDueTime(testDate)

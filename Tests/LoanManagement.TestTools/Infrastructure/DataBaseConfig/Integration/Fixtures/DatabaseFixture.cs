@@ -1,5 +1,3 @@
-using System.Transactions;
-
 namespace LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration.Fixtures;
 
 public class DatabaseFixture : IDisposable

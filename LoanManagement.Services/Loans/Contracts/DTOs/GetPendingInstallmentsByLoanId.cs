@@ -1,6 +1,4 @@
-﻿using LoanManagement.Entities.installments;
-
-namespace LoanManagement.Services.Loans.Contracts.DTOs;
+﻿namespace LoanManagement.Services.Loans.Contracts.DTOs;
 
 public class GetPendingInstallmentsByLoanIdDto
 {

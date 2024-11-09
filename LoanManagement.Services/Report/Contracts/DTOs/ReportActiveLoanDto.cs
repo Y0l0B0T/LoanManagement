@@ -1,7 +1,4 @@
-﻿using LoanManagement.Entities.Loans;
-using LoanManagement.Services.Loans.Contracts.DTOs;
-
-namespace LoanManagement.Services.Report.Contracts.DTOs;
+﻿namespace LoanManagement.Services.Report.Contracts.DTOs;
 
 public class ReportActiveLoanDto
 {

@@ -1,6 +1,4 @@
-﻿using LoanManagement.Entities.Admins;
-
-namespace LoanManagement.TestTools.Admins;
+﻿namespace LoanManagement.TestTools.Admins;
 
 public class AdminBuilder
 {

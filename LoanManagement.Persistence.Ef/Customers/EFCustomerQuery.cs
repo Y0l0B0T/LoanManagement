@@ -1,9 +1,4 @@
-﻿using LoanManagement.Entities.Customers;
-using LoanManagement.Entities.Loans;
-using LoanManagement.Services.Customers.Contracts.DTOs;
-using LoanManagement.Services.Customers.Contracts.Interfaces;
-
-namespace LoanManagement.Persistence.Ef.Customers;
+﻿namespace LoanManagement.Persistence.Ef.Customers;
 
 public class EFCustomerQuery(EfDataContext context) : CustomerQuery
 {

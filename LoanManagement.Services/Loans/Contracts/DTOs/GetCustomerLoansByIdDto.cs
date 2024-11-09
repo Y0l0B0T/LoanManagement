@@ -1,7 +1,4 @@
-﻿using LoanManagement.Entities.installments;
-using LoanManagement.Entities.Loans;
-
-namespace LoanManagement.Services.Loans.Contracts.DTOs;
+﻿namespace LoanManagement.Services.Loans.Contracts.DTOs;
 
 public class GetCustomerLoansByIdDto
 {

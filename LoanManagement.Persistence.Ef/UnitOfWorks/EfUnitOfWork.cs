@@ -1,6 +1,4 @@
-﻿using LoanManagement.Services.UnitOfWorks;
-
-namespace LoanManagement.Persistence.Ef.UnitOfWorks;
+﻿namespace LoanManagement.Persistence.Ef.UnitOfWorks;
 
 public class EfUnitOfWork(EfDataContext dbContext) : UnitOfWork
 {

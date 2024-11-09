@@ -1,6 +1,4 @@
-﻿using LoanManagement.Entities.Customers;
-
-namespace LoanManagement.Services.Customers.Contracts.Interfaces;
+﻿namespace LoanManagement.Services.Customers.Contracts.Interfaces;
 
 public interface CustomerRepository
 {

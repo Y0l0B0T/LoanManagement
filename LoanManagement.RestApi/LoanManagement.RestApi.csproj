@@ -17,10 +17,4 @@
       <ProjectReference Include="..\LoanManagement.Persistence.Ef\LoanManagement.Persistence.Ef.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Controllers\installments\" />
-      <Folder Include="Controllers\LoansDefinition\" />
-      <Folder Include="Controllers\Loans\" />
-    </ItemGroup>
-
 </Project>

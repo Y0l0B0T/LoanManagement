@@ -1,10 +1,4 @@
-﻿using LoanManagement.Entities.Admins;
-using LoanManagement.Service.Unit.Tests.Admins;
-using LoanManagement.Services.Admins.Contracts.Interfaces;
-using LoanManagement.Services.Admins.Exceptions;
-using LoanManagement.Services.UnitOfWorks;
-
-namespace LoanManagement.Services.Admins;
+﻿namespace LoanManagement.Services.Admins;
 
 public class AdminAppService(
     AdminRepository adminRepository,

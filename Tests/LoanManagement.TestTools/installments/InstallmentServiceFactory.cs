@@ -1,8 +1,4 @@
-﻿using LoanManagement.Persistence.Ef;
-using LoanManagement.Persistence.Ef.installments;
-using LoanManagement.Persistence.Ef.Loans;
-using LoanManagement.Persistence.Ef.UnitOfWorks;
-using LoanManagement.Services.installments;
+﻿using LoanManagement.Services.installments;
 using LoanManagement.Services.installments.Contracts.Interfaces;
 
 namespace LoanManagement.TestTools.installments;

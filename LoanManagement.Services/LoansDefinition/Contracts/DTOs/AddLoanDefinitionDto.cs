@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace LoanManagement.Services.LoansDefinition.Contracts.DTOs;
+﻿namespace LoanManagement.Services.LoansDefinition.Contracts.DTOs;
 
 public class AddLoanDefinitionDto
 {

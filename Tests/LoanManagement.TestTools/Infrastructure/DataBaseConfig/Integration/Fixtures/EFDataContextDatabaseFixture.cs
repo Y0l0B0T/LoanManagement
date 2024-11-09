@@ -1,6 +1,3 @@
-using LoanManagement.Persistence.Ef;
-using Xunit;
-
 namespace LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration.
     Fixtures;
 

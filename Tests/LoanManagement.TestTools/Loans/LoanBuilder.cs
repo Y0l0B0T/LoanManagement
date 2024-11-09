@@ -1,7 +1,4 @@
-﻿using LoanManagement.Entities.installments;
-using LoanManagement.Entities.Loans;
-
-namespace LoanManagement.TestTools.Loans;
+﻿namespace LoanManagement.TestTools.Loans;
 
 public class LoanBuilder
 {

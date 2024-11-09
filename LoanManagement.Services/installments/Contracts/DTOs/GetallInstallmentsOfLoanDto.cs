@@ -1,6 +1,4 @@
-﻿using LoanManagement.Entities.installments;
-
-namespace LoanManagement.Services.installments.Contracts.DTOs;
+﻿namespace LoanManagement.Services.installments.Contracts.DTOs;
 
 public class GetAllInstallmentsOfLoanDto
 {

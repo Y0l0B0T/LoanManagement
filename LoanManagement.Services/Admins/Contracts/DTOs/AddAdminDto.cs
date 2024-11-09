@@ -1,4 +1,4 @@
-namespace LoanManagement.Service.Unit.Tests.Admins;
+namespace LoanManagement.Services.Admins.Contracts.DTOs;
 
 public class AddAdminDto
 {

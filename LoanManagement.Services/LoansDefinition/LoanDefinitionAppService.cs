@@ -1,12 +1,4 @@
-﻿using LoanManagement.Entities.LoansDefinition;
-using LoanManagement.Services.Admins.Contracts.Interfaces;
-using LoanManagement.Services.Admins.Exceptions;
-using LoanManagement.Services.Loans.Contracts.Interfaces;
-using LoanManagement.Services.LoansDefinition.Contracts.DTOs;
-using LoanManagement.Services.LoansDefinition.Contracts.Interfaces;
-using LoanManagement.Services.UnitOfWorks;
-
-namespace LoanManagement.Services.LoansDefinition;
+﻿namespace LoanManagement.Services.LoansDefinition;
 
 public class LoanDefinitionAppService(
     AdminRepository adminRepository,

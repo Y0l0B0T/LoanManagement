@@ -1,6 +1,4 @@
-﻿using LoanManagement.Entities.Loans;
-
-namespace LoanManagement.Services.Customers.Contracts.DTOs;
+﻿namespace LoanManagement.Services.Customers.Contracts.DTOs;
 
 public class GetLoansByNationalCodeDto
 {

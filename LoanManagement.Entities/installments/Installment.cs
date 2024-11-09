@@ -1,6 +1,4 @@
-﻿using LoanManagement.Entities.Loans;
-
-namespace LoanManagement.Entities.installments;
+﻿namespace LoanManagement.Entities.installments;
 
 public class Installment
 {

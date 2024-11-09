@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace LoanManagement.Persistence.Ef;
+﻿namespace LoanManagement.Persistence.Ef;
 
 public class EfDataContext : DbContext
 {

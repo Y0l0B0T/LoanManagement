@@ -1,6 +1,4 @@
 ﻿using LoanManagement.Entities.LoansDefinition;
-using LoanManagement.Services.LoansDefinition;
-using LoanManagement.Services.LoansDefinition.Contracts.Interfaces;
 
 namespace LoanManagement.TestTools.LoansDefinition;
 

@@ -1,12 +1,4 @@
-﻿using FluentAssertions;
-using LoanManagement.Entities.Admins;
-using LoanManagement.Persistence.Ef.Admins;
-using LoanManagement.Services.Admins.Contracts.Interfaces;
-using LoanManagement.TestTools.Admins;
-using LoanManagement.TestTools.Infrastructure.DataBaseConfig.Integration;
-using Xunit;
-
-namespace LoanManagement.Service.Unit.Tests.Admins;
+﻿namespace LoanManagement.Service.Unit.Tests.Admins;
 
 public class AdminQueryTests : BusinessIntegrationTest
 {

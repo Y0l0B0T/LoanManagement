@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using LoanManagement.Entities.Customers;
-
-namespace LoanManagement.Services.Customers.Contracts.DTOs;
+﻿namespace LoanManagement.Services.Customers.Contracts.DTOs;
 
 public class UpdateByAdminCustomerDto
 {
