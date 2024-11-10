@@ -1,7 +1,7 @@
 ﻿namespace LoanManagement.RestApi.Controllers.Loans;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/loan")]
 public class LoanController(LoanService loanService,
     LoanQuery loanQuery) : ControllerBase
 {
@@ -10,8 +10,8 @@ public class LoanController(LoanService loanService,
     {
         loanService.Add(dto);
     }
-    [HttpGet("{id}")]
-    public HashSet<GetPendingInstallmentsByLoanIdDto> GetPendingInstallmentsByLoanId([FromRoute] int loadId)
+    [HttpGet("{loadId}/getinstallmentsloan")]
+    public HashSet<GetPendingInstallmentsByLoanIdDto> GetPendingInstallmentsByLoanId(int loadId)
     {
         return loanQuery.GetPendingInstallmentsByLoanId(loadId);
     }

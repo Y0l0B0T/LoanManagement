@@ -1,6 +1,6 @@
 ﻿namespace LoanManagement.RestApi.Controllers.Admins;
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/admin")]
 public class AdminController(AdminService adminService
 , AdminQuery adminQuery) : ControllerBase
 {
@@ -10,19 +10,19 @@ public class AdminController(AdminService adminService
         adminService.Add(dto);
     }
 
-    [HttpDelete("id")]
-    public void Delete([FromRoute] int adminId)
+    [HttpDelete("{adminId}/delete")]
+    public void Delete(int adminId)
     {
         adminService.Delete(adminId);
     }
 
-    [HttpGet]
+    [HttpGet("getall")]
     public HashSet<GetAllAdminsDto> GetAll()
     {
         return adminQuery.GetAll();
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{adminId}/getbyid")]
     public Admin? GetById(int adminId)
     {
         return adminQuery.GetById(adminId);

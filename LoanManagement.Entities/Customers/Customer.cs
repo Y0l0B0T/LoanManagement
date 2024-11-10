@@ -19,6 +19,6 @@ public class Customer
 public enum JobType
 {
     Employee = 1,
-    SelfEmployed,
-    UnEmployed
+    SelfEmployed = 2,
+    UnEmployed = 3
 }

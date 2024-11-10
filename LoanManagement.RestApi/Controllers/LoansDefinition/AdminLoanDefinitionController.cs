@@ -3,7 +3,7 @@ using LoanManagement.Services.LoansDefinition.Contracts.DTOs;
 
 namespace LoanManagement.RestApi.Controllers.LoansDefinition;
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/loandefinition")]
 public class AdminLoanDefinitionController
     (LoanDefinitionService lService,LoanDefinitionQuery lQuery )
     : ControllerBase
@@ -14,13 +14,13 @@ public class AdminLoanDefinitionController
         lService.Add(adminId, dto);
     }
 
-    [HttpGet("{id}")]
-    public LoanDefinition? GetById([FromRoute] int id)
+    [HttpGet("{id}/getbyid")]
+    public LoanDefinition? GetById(int id)
     {
         return lQuery.GetById(id);
     }
 
-    [HttpGet]
+    [HttpGet("getall")]
     public HashSet<GetAllLoanDefinitionDto> GetAll()
     {
         return lQuery.GetAll();

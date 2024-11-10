@@ -1,30 +1,30 @@
 ﻿using LoanManagement.Services.Report.Contracts.DTOs;
 
-namespace LoanManagement.RestApi.Controllers;
+namespace LoanManagement.RestApi.Controllers.Reports;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/reports")]
 public class ReportsController(ReportQuery reportQuery) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("activeloan")]
     public HashSet<ReportActiveLoanDto> ReportActiveLoan()
     {
         return reportQuery.ReportActiveLoan();
     }
 
-    [HttpGet]
+    [HttpGet("riskycustomers")]
     public HashSet<ReportAllRiskyCustomersDto> ReportAllRiskyCustomers()
     {
         return reportQuery.ReportAllRiskyCustomers();
     }
 
-    [HttpGet("{date}")]
-    public ReportMonthlyIncomeDto ReportMonthlyIncome([FromRoute] DateOnly date)
+    [HttpGet("{date}/monthlyincome")]
+    public ReportMonthlyIncomeDto ReportMonthlyIncome(DateOnly date)
     {
         return reportQuery.ReportMonthlyIncome(date);
     }
 
-    [HttpGet]
+    [HttpGet("closedloans")]
     public HashSet<ReportAllClosedLoanDto> ReportAllClosedLoan()
     {
         return reportQuery.ReportAllClosedLoan();

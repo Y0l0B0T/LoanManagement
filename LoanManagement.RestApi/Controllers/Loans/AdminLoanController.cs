@@ -3,95 +3,95 @@
 namespace LoanManagement.RestApi.Controllers.Loans;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/loan")]
 public class AdminLoanController(
     LoanService loanService,
     LoanQuery loanQuery) : ControllerBase
 {
-    [HttpPost("add")]
+    [HttpPost("admin/add")]
     public void Add([FromBody] AddLoanDto dto)
     {
         loanService.Add(dto);
     }
 
-    [HttpPatch("{id}/confirm")]
-    public void ConfirmLoan(int adminId,[FromRoute] int loanId)
+    [HttpPatch("{loanId}/confirm")]
+    public void ConfirmLoan(int adminId,int loanId)
     {
         loanService.ConfirmLoan(adminId, loanId);
     }
 
-    [HttpPatch("{id}/reject")]
-    public void RejectLoan(int adminId,[FromRoute] int loanId)
+    [HttpPatch("{loanId}/reject")]
+    public void RejectLoan(int adminId,int loanId)
     {
         loanService.RejectLoan(adminId, loanId);
     }
 
-    [HttpPatch("{id}/pay")]
-    public void PayLoan(int adminId,[FromRoute] int loanId)
+    [HttpPatch("{loanId}/pay")]
+    public void PayLoan(int adminId,int loanId)
     {
         loanService.PayLoan(adminId, loanId);
     }
 
-    [HttpPatch("{id}/delayinpay")]
-    public void DelayInPayLoan([FromRoute] int loanId)
+    [HttpPatch("{loanId}/delayinpay")]
+    public void DelayInPayLoan(int loanId)
     {
         loanService.DelayInPayLoan(loanId);
     }
 
-    [HttpPatch("{id}/closed")]
-    public void ClosedLoan([FromRoute] int loanId)
+    [HttpPatch("{loanId}/closed")]
+    public void ClosedLoan(int loanId)
     {
         loanService.ClosedLoan(loanId);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{loanId}/getbyid")]
     public Loan? GetById(int loanId)
     {
         return loanQuery.GetById(loanId);
     }
-    [HttpGet]
+    [HttpGet("getall")]
     public HashSet<GetAllLoansDto> GetAll()
     {
         return loanQuery.GetAll();
     }
-    [HttpGet]
+    [HttpGet("getallreview")]
     public HashSet<GetAllLoansDto> GetAllInReview()
     {
         return loanQuery.GetAllInReview();
     }
 
-    [HttpGet]
+    [HttpGet("getallapproved")]
     public HashSet<GetAllLoansDto> GetAllInApproved()
     {
         return loanQuery.GetAllInApproved();
     }
 
-    [HttpGet]
+    [HttpGet("getallrejected")]
     public HashSet<GetAllLoansDto> GetAllInRejected()
     {
         return loanQuery.GetAllInRejected();
     }
 
-    [HttpGet]
+    [HttpGet("getallpaying")]
     public HashSet<GetAllLoansDto> GetAllInPaying()
     {
         return loanQuery.GetAllInPaying();
     }
 
-    [HttpGet]
+    [HttpGet("getallactive")]
     public HashSet<GetAllLoansDto> GetAllActiveLoans()
     {
         return loanQuery.GetAllActiveLoans();
     }
 
-    [HttpGet]
+    [HttpGet("getallclosed")]
     public HashSet<GetAllLoansDto> GetAllInClosed()
     {
         return loanQuery.GetAllInClosed();
     }
 
-    [HttpGet("{id}")]
-    public HashSet<GetPendingInstallmentsByLoanIdDto> GetPendingInstallmentsByLoanId([FromRoute] int loadId)
+    [HttpGet("{loadId}/getpendinginstallmentsloan")]
+    public HashSet<GetPendingInstallmentsByLoanIdDto> GetPendingInstallmentsByLoanId(int loadId)
     {
         return loanQuery.GetPendingInstallmentsByLoanId(loadId);
     }
